@@ -24,7 +24,7 @@ app.use(compression());
 
 //import database
 const config = require('./config/database');
-//connect to mongoDB 
+//connect to mongoDB
 mongoose.connect(config.database);
 // validate connection to mongoDB
 mongoose.connection.on('connected',() => {
