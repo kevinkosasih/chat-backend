@@ -20,6 +20,10 @@ const AccountModel = mongoose.Schema({
   blacklist:[{
     username:{type:String},
     name:{type:String}
+  }],
+  friendrequest:[{
+    username:{type:String},
+    name:{type:String}
   }]
 })
 AccountModel.methods.generateHash = function(password) {
