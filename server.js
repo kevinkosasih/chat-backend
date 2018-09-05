@@ -42,6 +42,8 @@ const verify = require('./control/verify')
 const chathitory = require('./control/chathistory')
 const getChat = require('./control/getChat')
 const addFriends = require('./control/addfriend')
+const changePassword = require ('./control/changePassword')
+const editprofile = require('./control/editprofile')
 //routing API
 app.get('/getdata',loginAccount.dataToken)
 app.get('/logout',logoutAccount.logout)
@@ -55,6 +57,9 @@ app.put('/addchatroom',chathitory.newchatroom)
 
 //port API (can be change)
 const port = 3001;
+app.put('/changepassword',changePassword.changePassword)
+app.put('/editprofile',editprofile.editprofile)
+//port API (can be change)
 //openconnection for socket.io
 io.on('connection', (client) => {
   console.log("connected");

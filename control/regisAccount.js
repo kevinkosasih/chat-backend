@@ -49,7 +49,9 @@ module.exports.newRegis= (req,res) => {
         message: 'Error: Server error'
       });
     }
-    if(previousAccounts.length > 0){
+
+    if(previousAccounts.length != 0){
+
        if (previousAccounts[0].username == username && previousAccounts[0].email == email) {
         return res.send({
           success: false,

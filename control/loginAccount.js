@@ -43,6 +43,7 @@ module.exports.login = (req,res) => {
     }
 
     const user = currentAccount[0];
+
     if(!user.validPassword(password)){
       return res.send({
         success: false,
@@ -58,6 +59,7 @@ module.exports.login = (req,res) => {
       if(err){
         res.send(err)
       }
+
       const data  = JSON.stringify({
         token:doc._id
       })
@@ -71,10 +73,10 @@ module.exports.login = (req,res) => {
       return res.send({
         success: true,
         message: 'Logged in',
+
         token:doc._id
       });
     })
-
   })
 }
 
@@ -102,6 +104,7 @@ module.exports.dataToken = (req,res) =>{
     var decipher = crypto.createDecipher(algorithm,KeyCookies)
     var decrypted = decipher.update(decryptAtob,'hex','utf8')
     decrypted += decipher.final('utf8');
+
     AccountSession.find({
       _id:JSON.parse(decrypted).token,
       isDeleted:false

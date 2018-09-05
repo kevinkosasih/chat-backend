@@ -1,19 +1,20 @@
+const Account = require ('../models/accountmodel')
 const AccountSession = require('../models/accountsessionmodel');
-const Account = require('../models/accountmodel');
 const crypto = require('crypto')
+const bcrypt = require('bcrypt');
 const algorithm = 'aes-256-ctr'
 const KeyCookies = "setCookiesTokenChatApp"
 const atob = require('atob')
 
-module.exports.verify = (req,res) => {
-  const {headers} = req;
+module.exports.changePassword = (req,res) =>{
+  const {headers,body} = req
   const {cookie} = headers
+  const {oldPass,newPass} = body
   if(!cookie){
     return res.send({
       success:false
     })
   }
-
   let getcookie  = cookie.split(";")
   let getToken = []
   for(var i=0;i<getcookie.length;i++){
@@ -41,7 +42,7 @@ module.exports.verify = (req,res) => {
             message: 'Error: Server error'
           });
         }
-
+        console.log("id: ",JSON.parse(decrypted));
         if (sessions.length != 1) {
           return res.send({
             success: false,
@@ -50,20 +51,46 @@ module.exports.verify = (req,res) => {
 
         } else {
           const {accountid} = sessions[0]
+          console.log("Session: ",sessions[0]);
           Account.find({
             _id:accountid
-          },{password:0},(err,account) => {
+          },(err,account) => {
             if (err) {
-              console.log(err);
               return res.send({
                 success: false,
                 message: 'Error: Server error'
               });
             }
-            return res.send({
-              success: true,
-              message: 'Good'
-            });
+            else if (account) {
+              const akun = account[0];
+              console.log("ini Chibay: ",account);
+              if(oldPass == ""){
+                res.send({
+                  success: false,
+                  message : "Old password is required"
+                })
+              }
+              else if(bcrypt.compareSync(oldPass, akun.password)){
+                console.log("SAMA KNTL");
+                console.log("oldPass: "+oldPass);
+                console.log("newPass: "+newPass);
+
+                const account = new Account();
+                res.send({
+                  success: true,
+                  message: ''
+                });
+                Account.update({_id: akun._id}, {$set: {password: account.generateHash(newPass)}}).exec();
+
+              }
+              else{
+                console.log("BEDA KNTL");
+                res.send({
+                  success : false,
+                  message : "Wrong old password"
+                })
+              }
+            }
           })
         }
       });
