@@ -45,7 +45,7 @@ module.exports.search = (req,res) => {
     },(err,currentToken) => {
       if(err){
         return res.send({
-          success;false,
+          success:false,
           message:'Server error'
         })
       }

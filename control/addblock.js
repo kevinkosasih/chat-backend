@@ -46,7 +46,7 @@ module.exports.add = (req,res) => {
     },(err,currentToken) => {
       if(err){
         return res.send({
-          success;false,
+          success:false,
           message:'Server error'
         })
       }
@@ -135,7 +135,7 @@ module.exports.block = (req,res) => {
     },(err,currentToken) => {
       if(err){
         return res.send({
-          success;false,
+          success:false,
           message:'Server error'
         })
       }
