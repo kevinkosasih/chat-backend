@@ -41,8 +41,9 @@ module.exports.login = (req,res) => {
         message: 'Error: Username or password is wrong.'
       });
     }
+
     const user = currentAccount[0];
-    console.log("CCC: "+currentAccount[0]);
+
     if(!user.validPassword(password)){
       return res.send({
         success: false,
@@ -58,7 +59,7 @@ module.exports.login = (req,res) => {
       if(err){
         res.send(err)
       }
-      console.log("ASD: ",doc);
+
       const data  = JSON.stringify({
         token:doc._id
       })
@@ -66,7 +67,7 @@ module.exports.login = (req,res) => {
       var crypted = cipher.update(data,'utf8','hex')
       crypted += cipher.final('hex');
       const encryptBtoa = btoa(crypted)
-      console.log(data);
+
       const expDate = new Date(Date.now()+(1000*60*60*24))
       res.cookie('Token',encryptBtoa,{expires:expDate,httpOnly: true})
       return res.send({
@@ -101,7 +102,7 @@ module.exports.dataToken = (req,res) =>{
     var decipher = crypto.createDecipher(algorithm,KeyCookies)
     var decrypted = decipher.update(decryptAtob,'hex','utf8')
     decrypted += decipher.final('utf8');
-    console.log(JSON.parse(decrypted));
+
     AccountSession.find({
       _id:JSON.parse(decrypted).token,
       isDeleted:false

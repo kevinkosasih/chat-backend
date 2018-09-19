@@ -74,26 +74,25 @@ module.exports.addFriends = (req,res) =>{
         }
         let userfriendList = [] ,
             userRequesList = []
-        if(accountid === account[0]._id){
-          let userfriendList = account[0].friends.concat({
+        if(accountid == account[0]._id){
+          userfriendList = account[0].friends.concat({
             username:friendlist.username,
             name:friendlist.name
           })
-          let userRequesList = account[1].friendrequest.concat({
+          userRequesList = account[1].friendrequest.concat({
             username:account[0].username,
             name:account[0].name
           })
         } else {
-          let userfriendList = account[1].friends.concat({
+          userfriendList = account[1].friends.concat({
             username:friendlist.username,
             name:friendlist.name
           })
-          let userRequesList = account[0].friendrequest.concat({
+          userRequesList = account[0].friendrequest.concat({
             username:account[1].username,
             name:account[1].name
           })
         }
-        console.log(account[0].friendrequest);
         Account.findOneAndUpdate({
           _id:accountid
         },{

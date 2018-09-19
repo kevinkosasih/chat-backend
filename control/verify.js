@@ -13,7 +13,7 @@ module.exports.verify = (req,res) => {
       success:false
     })
   }
-  console.log(cookie);
+
   let getcookie  = cookie.split(";")
   let getToken = []
   for(var i=0;i<getcookie.length;i++){

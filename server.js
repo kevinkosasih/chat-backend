@@ -14,7 +14,7 @@ const cookieParser = require('cookie-parser')
 app.use(morgan('common'))
 app.use (helmet())
 //middleware using cors and bodyParser
-app.use(cors());
+app.use(cors({origin:'http://10.183.28.154:3000'}));
 
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
@@ -40,22 +40,32 @@ const regisAccount = require('./control/regisAccount')
 const logoutAccount = require('./control/logoutAccount')
 const verify = require('./control/verify')
 const chathitory = require('./control/chathistory')
+const getChat = require('./control/getChat')
 const addFriends = require('./control/addfriend')
 const changePassword = require ('./control/changePassword')
 const editprofile = require('./control/editprofile')
+const request = require('./control/addblock')
+const checkrequest = require('./control/checkrequest')
+const search = require('./control/searchfriend')
+
 //routing API
 app.get('/getdata',loginAccount.dataToken)
 app.get('/logout',logoutAccount.logout)
 app.get('/verify',verify.verify)
+app.get('/chat',getChat.getchat)
 app.post('/login',loginAccount.login)
 app.post('/regisnew',regisAccount.newRegis)
+app.post('/search',search.search)
 app.post('/chat',chathitory.savechat)
+app.post('/check',checkrequest.cekRequest)
+app.put('/add',request.add)
+app.put('/block',request.block)
 app.put('/Friends', addFriends.addFriends)
 app.put('/addchatroom',chathitory.newchatroom)
 app.put('/changepassword',changePassword.changePassword)
 app.put('/editprofile',editprofile.editprofile)
 //port API (can be change)
-const port = 3000;
+const port = 3001;
 //openconnection for socket.io
 io.on('connection', (client) => {
   console.log("connected");
