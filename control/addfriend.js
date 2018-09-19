@@ -57,7 +57,7 @@ module.exports.addFriends = (req,res) =>{
       }
       const{accountid}=currentToken[0]
       Account.find({
-        $or:[{_id:accountid},{username:friendlist.usernames}]
+        $or:[{_id:accountid},{username:friendlist.username}]
       },(err,account)=>{
         if(err){
           return res.send({
@@ -65,23 +65,29 @@ module.exports.addFriends = (req,res) =>{
             message: 'Error: Server error'
           });
         }
+        if(account.length != 2 ){
+          return res.send({
+            success:false,
+            message:"Error: Data invalid"
+          })
+        }
         let userfriendList = [] ,
             userRequesList = []
-        if(accountid === account[0]._id){
-          let userfriendList = account[0].friends.concat({
+        if(accountid == account[0]._id){
+          userfriendList = account[0].friends.concat({
             username:friendlist.username,
             name:friendlist.name
           })
-          let userRequesList = account[1].friendrequest.concat({
+          userRequesList = account[1].friendrequest.concat({
             username:account[0].username,
             name:account[0].name
           })
         } else {
-          let userfriendList = account[1].friends.concat({
+          userfriendList = account[1].friends.concat({
             username:friendlist.username,
             name:friendlist.name
           })
-          let userRequesList = account[0].friendrequest.concat({
+          userRequesList = account[0].friendrequest.concat({
             username:account[1].username,
             name:account[1].name
           })
@@ -100,7 +106,7 @@ module.exports.addFriends = (req,res) =>{
             });
           }
           Account.findOneAndUpdate({
-            username:friendlist.usernames
+            username:friendlist.username
           },{
             $set:{
               friendrequest:userRequesList
@@ -119,7 +125,7 @@ module.exports.addFriends = (req,res) =>{
           })
         })
       })
-      }
+     }
     )
   }
   else{

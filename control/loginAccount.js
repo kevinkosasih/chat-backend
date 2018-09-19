@@ -73,8 +73,6 @@ module.exports.login = (req,res) => {
       return res.send({
         success: true,
         message: 'Logged in',
-
-        token:doc._id
       });
     })
   })
