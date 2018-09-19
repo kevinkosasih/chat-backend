@@ -7,9 +7,11 @@ const KeyCookies = "setCookiesTokenChatApp"
 const atob = require('atob')
 
 module.exports.editprofile = (req,res) =>{
-  const {headers,body} = req
+  const {headers,body,file} = req
   const {cookie} = headers
   const {name} = body
+  const {filename} = file
+
   if(!cookie){
     return res.send({
       success:false
@@ -66,7 +68,7 @@ module.exports.editprofile = (req,res) =>{
               res.send({
                 success : true
               })
-              Account.update({_id: akun._id}, {$set: {name : name}}).exec()
+              Account.update({_id: akun._id}, {$set: {name : name, profilePicture : filename}}).exec()
             }
           })
         }
