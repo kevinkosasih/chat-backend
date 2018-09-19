@@ -41,7 +41,7 @@ module.exports.newRegis= (req,res) => {
   // 1. Verify email doesn't exist
   // 2. Save
   Account.find({
-    $or:[{email: email},{username: username}]
+    $or:[{username: username},{email: email}]
   }, (err, previousAccounts) => {
     if (err) {
       return res.send({
@@ -49,21 +49,21 @@ module.exports.newRegis= (req,res) => {
         message: 'Error: Server error'
       });
     }
-    if(previousAccounts.length > 0){
+
+    if(previousAccounts.length != 0){
+
        if (previousAccounts[0].username == username && previousAccounts[0].email == email) {
         return res.send({
           success: false,
-          message: 'Error: Account already exist.'
-        });
-      } else if (previousAccounts[0].email == email) {
-        return res.send({
-          success: false,
-          message: 'Error: Email already exist.'
+          message: 'Account already exist.'
         });
       } else if (previousAccounts[0].username == username) {
         return res.send({
           success: false,
-          message: 'Error: Username already exist.'
+        });
+      } else if (previousAccounts[0].email == email) {
+        return res.send({
+          success: false,
         });
       }
     }

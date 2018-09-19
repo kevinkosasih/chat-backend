@@ -15,7 +15,7 @@ module.exports.search = (req,res) => {
       success:false
     })
   }
-  if(!friendlist|| !friendlist.username|| !friendlist.name){
+  if(!username){
     return res.send({
       success:false,
       message:'Error: Cannot be blank',
@@ -45,7 +45,7 @@ module.exports.search = (req,res) => {
     },(err,currentToken) => {
       if(err){
         return res.send({
-          success;false,
+          success:false,
           message:'Server error'
         })
       }
@@ -56,28 +56,80 @@ module.exports.search = (req,res) => {
           message:'Error : Invalid data'
         })
       }
-
       Account.find({
-        username:username
-      },(err,currentAccount) =>{
+        _id: currentToken[0].accountid
+      },(err,checkAccount) => {
         if(err){
           return res.send ({
             success:false,
             message:'Error: Server error'
           })
         }
-
-        if(currentAccount.length != 1){
+        if(checkAccount.length != 1 ){
           return res.send({
             success: false,
-            message: 'Error: Username or password is wrong.'
+            message: 'Error: No username found'
           });
         }
+        if(checkAccount[0].username == username){
+          return res.send({
+            success:true,
+            username : username,
+            name : checkAccount[0].name,
+            message : "You can't add yourself as friend"
+          })
+        }
+        for(var blocked in checkAccount[0].blacklist){
+          if(checkAccount[0].blacklist[blocked] != null && checkAccount[0].blacklist[blocked].username == username){
+            return res.send({
+              success:true,
+              username:username,
+              name:checkAccount[0].blacklist[blocked].name,
+              message:'You blocked this user'
+            })
+          }
+        }
+        for(var request in checkAccount[0].friendrequest){
+          if(checkAccount[0].friendrequest[request] != null && checkAccount[0].friendrequest[request].username == username){
+            return res.send({
+              success:true,
+              username:username,
+              name:checkAccount[0].friendrequest[request].name,
+              request:true
+            })
+          }
+        }
+        for(var friend in checkAccount[0].friends){
+          if(checkAccount[0].friends[friend] != null && checkAccount[0].friends[friend].username == username){
+            return res.send({
+              success:true,
+              username:username,
+              name:checkAccount[0].friends[friend].name,
+              message:'Already added as friend'
+            })
+          }
+        }
+        Account.find({
+          username:username
+        },(err,currentAccount) =>{
+          if(err){
+            return res.send ({
+              success:false,
+              message:'Error: Server error'
+            })
+          }
 
-        return res.send({
-          success:true,
-          username: currentAccount[0].username,
-          namme : currentAccount[0].name
+          if(currentAccount.length != 1){
+            return res.send({
+              success: false,
+              message: 'No username found'
+            });
+          }
+          return res.send({
+            success:true,
+            username: currentAccount[0].username,
+            name : currentAccount[0].name
+          })
         })
       })
     })

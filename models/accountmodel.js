@@ -8,6 +8,7 @@ const AccountModel = mongoose.Schema({
   name:{type:String,require:true,default:''},
   description:{type:String,default:''},
   registerDate:{type:Date,require:true,default:Date.now()},
+  profilePicture : {type : String, default :''},
   friends:[{
     username:{type:String},
     name:{type:String}

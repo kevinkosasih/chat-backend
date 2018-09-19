@@ -8,7 +8,8 @@ const atob = require('atob')
 module.exports.add = (req,res) => {
   const {headers,body} = req
   const {
-    username
+    username,
+    name
   } = body
   const{
     cookie
@@ -18,7 +19,7 @@ module.exports.add = (req,res) => {
       success:false
     })
   }
-  if(!friendlist|| !friendlist.username|| !friendlist.name){
+  if(!username && !name){
     return res.send({
       success:false,
       message:'Error: Cannot be blank',
@@ -46,7 +47,7 @@ module.exports.add = (req,res) => {
     },(err,currentToken) => {
       if(err){
         return res.send({
-          success;false,
+          success:false,
           message:'Server error'
         })
       }
@@ -72,23 +73,44 @@ module.exports.add = (req,res) => {
         if(currentAccount.length != 1){
           return res.send({
             success: false,
-            message: 'Error: Username or password is wrong.'
+            message: 'Error: Data Invalid.'
           });
         }
 
-        let friendrequest = currentAccount[0].friendrequest
-        let friendlist = currentAccount[0].friendlist
-
-        for (var pos in friendrequest){
-          if(friendrequest[pos].username == username){
-            friendlist.push(friendrequest[pos])
-            delete friendrequest[pos]
-            break;
+        Account.findOneAndUpdate({
+          _id:currentAccount[0]._id
+        }, {
+          $push: {friends:{
+            username:username,
+            name: name
+          }}
+        },{new: true},(err)=>{
+          if(err){
+            return res.send ({
+              success:false,
+              message:'Error: Server error'
+            })
           }
-        }
-
-        console.log(friendlist);
-        console.log(friendrequest);
+          Account.findOneAndUpdate({
+            _id:currentAccount[0]._id
+          }, {
+            $pull: {friendrequest:{
+              username:username,
+              name: name
+            }}
+          },{new: true},(err)=>{
+            if(err){
+              return res.send ({
+                success:false,
+                message:'Error: Server error'
+              })
+            }
+            console.log(err);
+            return res.send ({
+              success:true
+            })
+          })
+        })
       })
     })
   }
@@ -97,7 +119,8 @@ module.exports.add = (req,res) => {
 module.exports.block = (req,res) => {
   const {headers,body} = req
   const {
-    username
+    username,
+    name
   } = body
   const{
     cookie
@@ -107,7 +130,7 @@ module.exports.block = (req,res) => {
       success:false
     })
   }
-  if(!friendlist|| !friendlist.username|| !friendlist.name){
+  if(!username){
     return res.send({
       success:false,
       message:'Error: Cannot be blank',
@@ -135,7 +158,7 @@ module.exports.block = (req,res) => {
     },(err,currentToken) => {
       if(err){
         return res.send({
-          success;false,
+          success:false,
           message:'Server error'
         })
       }
@@ -165,19 +188,40 @@ module.exports.block = (req,res) => {
           });
         }
 
-        let friendrequest = currentAccount[0].friendrequest
-        let blacklist = currentAccount[0].blacklist
-
-        for (var pos in friendrequest){
-          if(friendrequest[pos].username == username){
-            blacklist.push(friendrequest[pos])
-            delete friendrequest[pos]
-            break;
+        Account.findOneAndUpdate({
+          _id:currentAccount[0]._id
+        }, {
+          $push: {blacklist:{
+            username:username,
+            name: name
+          }}
+        },{new: true},(err)=>{
+          if(err){
+            return res.send ({
+              success:false,
+              message:'Error: Server error'
+            })
           }
-        }
-
-        console.log(friendlist);
-        console.log(blacklist);
+          Account.findOneAndUpdate({
+            _id:currentAccount[0]._id
+          }, {
+            $pull: {friendrequest:{
+              username:username,
+              name: name
+            }}
+          },{new: true},(err)=>{
+            if(err){
+              return res.send ({
+                success:false,
+                message:'Error: Server error'
+              })
+            }
+            console.log(err);
+            return res.send ({
+              success:true
+            })
+          })
+        })
       })
     })
   }
