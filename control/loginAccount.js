@@ -8,7 +8,7 @@
 
 
 module.exports.login = (req,res) => {
-  const { body } = req;
+  const { body,file } = req;
   const {
     username,
     password
