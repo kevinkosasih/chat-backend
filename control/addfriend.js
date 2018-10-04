@@ -12,7 +12,6 @@ module.exports.addFriends = (req,res) =>{
     friendlist,
   } = body;
   const {cookie} = headers
-  console.log(friendlist.username);
   if(!cookie){
     return res.send({
       success:false
@@ -36,7 +35,7 @@ module.exports.addFriends = (req,res) =>{
     }
   }
   if(getToken[0]){
-    let decryptAtob = atob(getToken[1])
+    let decryptAtob = atob(decodeURIComponent(getToken[1]))
     var decipher = crypto.createDecipher(algorithm,KeyCookies)
     var decrypted = decipher.update(decryptAtob,'hex','utf8')
     decrypted += decipher.final('utf8');

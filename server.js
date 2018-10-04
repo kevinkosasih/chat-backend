@@ -11,16 +11,16 @@ const io = require('socket.io')();
 const cookieParser = require('cookie-parser')
 const multer = require('multer')
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, '../server/uploads/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, new Date().toISOString().replace(/:/g,'-') + '-' + file.originalname)
-  }
-})
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, '../server/uploads/')
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, new Date().toISOString().replace(/:/g,'-') + '-' + file.originalname)
+//   }
+// })
 
-const upload = multer({storage : storage}).single('Image')
+// const upload = multer({storage : storage}).single('Image')
 
 app.use(morgan('common'))
 app.use (helmet())
@@ -52,6 +52,7 @@ const logoutAccount = require('./control/logoutAccount')
 const verify = require('./control/verify')
 const chathitory = require('./control/chathistory')
 const getChat = require('./control/getChat')
+const newChatRoom = require('./control/newchatroom')
 const addFriends = require('./control/addfriend')
 const changePassword = require ('./control/changePassword')
 const editprofile = require('./control/editprofile')
@@ -65,18 +66,18 @@ app.get('/logout',logoutAccount.logout)
 app.get('/verify',verify.verify)
 app.get('/chat',getChat.getchat)
 app.post('/login',loginAccount.login)
-app.post('/regisnew',upload,regisAccount.newRegis)
+app.post('/regisnew'/*,upload*/,regisAccount.newRegis)
 app.post('/search',search.search)
 app.post('/chat',chathitory.savechat)
 app.post('/check',checkrequest.cekRequest)
 app.put('/add',request.add)
 app.put('/block',request.block)
 app.put('/Friends', addFriends.addFriends)
-app.put('/addchatroom',chathitory.newchatroom)
+app.put('/addchatroom',newChatRoom.newchatroom)
 app.put('/changepassword',changePassword.changePassword)
-app.put('/editprofile',upload,editprofile.editprofile)
+app.put('/editprofile'/*,upload*/,editprofile.editprofile)
 //port API (can be change)
-const port = 3000;
+const port = 3001;
 //openconnection for socket.io
 io.on('connection', (client) => {
   console.log("connected");
