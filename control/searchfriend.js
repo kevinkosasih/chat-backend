@@ -76,6 +76,7 @@ module.exports.search = (req,res) => {
             success:true,
             username : username,
             name : checkAccount[0].name,
+            picture : checkAccount[0].profilePicture,
             message : "You can't add yourself as friend"
           })
         }
@@ -85,6 +86,7 @@ module.exports.search = (req,res) => {
               success:true,
               username:username,
               name:checkAccount[0].blacklist[blocked].name,
+              picture : checkAccount[0].blacklist[blocked].picture,
               message:'You blocked this user'
             })
           }
@@ -95,6 +97,7 @@ module.exports.search = (req,res) => {
               success:true,
               username:username,
               name:checkAccount[0].friendrequest[request].name,
+              picture : checkAccount[0].friendrequest[request].picture,
               request:true
             })
           }
@@ -105,6 +108,7 @@ module.exports.search = (req,res) => {
               success:true,
               username:username,
               name:checkAccount[0].friends[friend].name,
+              picture : checkAccount[0].friends[friend].picture,
               message:'Already added as friend'
             })
           }
@@ -128,7 +132,8 @@ module.exports.search = (req,res) => {
           return res.send({
             success:true,
             username: currentAccount[0].username,
-            name : currentAccount[0].name
+            name : currentAccount[0].name,
+            picture : currentAccount[0].profilePicture
           })
         })
       })

@@ -3,30 +3,44 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const morgan = require('morgan')
+const morgan = require('morgan');
 const compression = require("compression");
-const helmet = require('helmet')
+const helmet = require('helmet');
 const app = express();
 const io = require('socket.io')();
-const cookieParser = require('cookie-parser')
-const multer = require('multer')
+const cookieParser = require('cookie-parser');
+const multer = require('multer');
+const fs = require('file-system');
 
-const storage = multer.diskStorage({
+const storageProfilePhoto = multer.diskStorage({
+
   destination: function (req, file, cb) {
-    cb(null, '../server/uploads/')
+    cb(null, './uploads/')
   },
   filename: function (req, file, cb) {
     cb(null, new Date().toISOString().replace(/:/g,'-') + '-' + file.originalname)
   }
 })
 
-const upload = multer({storage : storage}).single('Image')
+const uploadImage = multer({storage : storageProfilePhoto, limits: {fileSize: 1000000, files:1}}).single('Image')
+
+const storageAttachment = multer.diskStorage({
+
+  destination: function (req, file, cb) {
+    cb(null, './attachment/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, new Date().toISOString().replace(/:/g,'-') + '-' + file.originalname)
+  }
+})
+
+const attachPhoto = multer({storage : storageAttachment, limits: {fileSize: 1000000, files:1}}).single('attachment')
 
 app.use(morgan('common'))
 app.use (helmet())
 //middleware using cors and bodyParser
 app.use(cors());
-app.use(express.static('../server/uploads'))
+app.use(express.static('./uploads'))
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(cookieParser());
@@ -65,16 +79,16 @@ app.get('/logout',logoutAccount.logout)
 app.get('/verify',verify.verify)
 app.get('/chat',getChat.getchat)
 app.post('/login',loginAccount.login)
-app.post('/regisnew',upload,regisAccount.newRegis)
+app.post('/regisnew',regisAccount.newRegis)
 app.post('/search',search.search)
-app.post('/chat',chathitory.savechat)
+app.post('/chat',attachPhoto,chathitory.savechat)
 app.post('/check',checkrequest.cekRequest)
 app.put('/add',request.add)
 app.put('/block',request.block)
 app.put('/Friends', addFriends.addFriends)
 app.put('/addchatroom',chathitory.newchatroom)
 app.put('/changepassword',changePassword.changePassword)
-app.put('/editprofile',upload,editprofile.editprofile)
+app.put('/editprofile',uploadImage,editprofile.editprofile)
 //port API (can be change)
 const port = 3000;
 //openconnection for socket.io

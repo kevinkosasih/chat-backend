@@ -1,15 +1,17 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto')
+
 const algorithm = 'aes-256-ctr'
 
 const ChatHistory  = mongoose.Schema({
-  chatId:{type:String,require:true,default:''},
+  // chatId:{type:String,require:true,default:''},
   message:{type:String,require:true,default:''},
   sender:{type:String,require:true,default:''},
   timestamp:{
       date:{type:String,require:true,default:''},
       time:{type:String,require:true,default:''}
   },
+  attachment : {type : String},
   notification:{type:String},
   isdelet:{type:Boolean,require,default:false}
 })

@@ -2,28 +2,26 @@ const ChatHistory = require('../models/chathistorymodel');
 const Account = require('../models/accountmodel');
 
 module.exports.savechat = (req,res) =>{
-  const{body} = req;
+  const{body,file} = req;
   const {
     chatId,
     message,
     sender,
     time
   }=body;
-  console.log(body);
-  let adsf = new ChatHistory();
-  console.log(adsf.encrypt(message,'asdodw'));
-  if(!chatId){
-    return res.send({
-      success:false,
-      message:'Error: cannot be blank'
-    })
-  }
+  const {filename} = file;
+
+  console.log("attach: ",filename);
+  console.log("msg: ",body);
+  console.log("time: ",time);
+
+  // if(!chatId){
+  //   return res.send({
+  //     success:false,
+  //     message:'Error: cannot be blank'
+  //   })
+  // }
   if(!message){
-    return res.send({
-      success:false,
-      message:'Error: cannot be blank'
-    })
-  }if(!sender){
     return res.send({
       success:false,
       message:'Error: cannot be blank'
@@ -36,11 +34,11 @@ module.exports.savechat = (req,res) =>{
   }
 
   const newChatHistory = new ChatHistory();
-
-  newChatHistory.chatId = chatId;
-  newChatHistory.message = newChatHistory.encrypt(message);
+  console.log("ASD: ",newChatHistory);
+  newChatHistory.message = newChatHistory.encrypt(message,'asd');
   newChatHistory.sender = sender;
   newChatHistory.time = time;
+  newChatHistory.attachment = filename;
 
   newChatHistory.save((err) =>{
     if(err){

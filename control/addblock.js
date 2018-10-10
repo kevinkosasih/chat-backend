@@ -9,7 +9,8 @@ module.exports.add = (req,res) => {
   const {headers,body} = req
   const {
     username,
-    name
+    name,
+    picture
   } = body
   const{
     cookie
@@ -82,7 +83,8 @@ module.exports.add = (req,res) => {
         }, {
           $push: {friends:{
             username:username,
-            name: name
+            name: name,
+            picture : picture
           }}
         },{new: true},(err)=>{
           if(err){
@@ -96,7 +98,8 @@ module.exports.add = (req,res) => {
           }, {
             $pull: {friendrequest:{
               username:username,
-              name: name
+              name: name,
+              picture : picture
             }}
           },{new: true},(err)=>{
             if(err){
@@ -107,7 +110,9 @@ module.exports.add = (req,res) => {
             }
             console.log(err);
             return res.send ({
-              success:true
+              success:true,
+              message : "Added as a friend",
+              picture : picture
             })
           })
         })
@@ -120,7 +125,8 @@ module.exports.block = (req,res) => {
   const {headers,body} = req
   const {
     username,
-    name
+    name,
+    picture
   } = body
   const{
     cookie
@@ -193,7 +199,8 @@ module.exports.block = (req,res) => {
         }, {
           $push: {blacklist:{
             username:username,
-            name: name
+            name: name,
+            picture : picture
           }}
         },{new: true},(err)=>{
           if(err){
@@ -207,7 +214,8 @@ module.exports.block = (req,res) => {
           }, {
             $pull: {friendrequest:{
               username:username,
-              name: name
+              name: name,
+              picture : picture
             }}
           },{new: true},(err)=>{
             if(err){
@@ -218,7 +226,9 @@ module.exports.block = (req,res) => {
             }
             console.log(err);
             return res.send ({
-              success:true
+              success:true,
+              message : "You block this user",
+              picture : picture
             })
           })
         })

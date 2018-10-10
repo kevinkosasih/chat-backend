@@ -2,16 +2,16 @@ const Account = require ('../models/accountmodel')
 const AccountSession = require('../models/accountsessionmodel');
 const crypto = require('crypto')
 const bcrypt = require('bcrypt');
-const algorithm = 'aes-256-ctr'
-const KeyCookies = "setCookiesTokenChatApp"
-const atob = require('atob')
+const algorithm = 'aes-256-ctr';
+const KeyCookies = "setCookiesTokenChatApp";
+const atob = require('atob');
+const fs = require('file-system');
+const multer = require('multer');
 
 module.exports.editprofile = (req,res) =>{
   const {headers,body,file} = req
   const {cookie} = headers
   const {name} = body
-  const {filename} = file
-
   if(!cookie){
     return res.send({
       success:false
@@ -44,7 +44,6 @@ module.exports.editprofile = (req,res) =>{
             message: 'Error: Server error'
           });
         }
-        console.log("id: ",JSON.parse(decrypted));
         if (sessions.length != 1) {
           return res.send({
             success: false,
@@ -53,7 +52,6 @@ module.exports.editprofile = (req,res) =>{
 
         } else {
           const {accountid} = sessions[0]
-          console.log("Session: ",sessions[0]);
           Account.find({
             _id:accountid
           },(err,account) => {
@@ -64,11 +62,42 @@ module.exports.editprofile = (req,res) =>{
               });
             }
             else if (account) {
-              const akun = account[0];
-              res.send({
-                success : true
-              })
-              Account.update({_id: akun._id}, {$set: {name : name, profilePicture : filename}}).exec()
+              const akun = account[0];//account cccccc
+              console.log("akun: ",akun);
+              if(file){
+                const {filename} = file
+                console.log("file : ",file);
+                Account.update({_id: akun._id}, {$set: {name : name, profilePicture : filename}}).exec()// ngubah diri sendiri
+                Account.update({'friends.username':akun.username},
+                {$set:
+                  {"friends.$[elem].username":akun.username,
+                  "friends.$[elem].name":name,
+                  "friends.$[elem].picture":filename}
+                },
+                {
+                  arrayFilters: [{'elem.username':akun.username}]
+                }
+              ).exec()//ngubah 1 database yang berteman dengan cccccc
+                res.send({
+                  success : true
+                })
+              }
+              else{
+                Account.update({_id: akun._id}, {$set: {name : name}}).exec()
+                Account.update({'friends.username':akun.username},
+                {$set:
+                  {"friends.$[elem].username":akun.username,
+                  "friends.$[elem].name":name,
+                  "friends.$[elem].picture":akun.profilePicture}
+                },
+                {
+                  arrayFilters: [{'elem.username':akun.username}]
+                }
+              ).exec()
+                res.send({
+                  success : true
+                })
+              }
             }
           })
         }
