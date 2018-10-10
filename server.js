@@ -65,11 +65,13 @@ app.get('/getdata',loginAccount.dataToken)
 app.get('/logout',logoutAccount.logout)
 app.get('/verify',verify.verify)
 app.get('/chat',getChat.getchat)
+
 app.post('/login',loginAccount.login)
 app.post('/regisnew'/*,upload*/,regisAccount.newRegis)
 app.post('/search',search.search)
 app.post('/chat',chathitory.savechat)
 app.post('/check',checkrequest.cekRequest)
+
 app.put('/add',request.add)
 app.put('/block',request.block)
 app.put('/Friends', addFriends.addFriends)

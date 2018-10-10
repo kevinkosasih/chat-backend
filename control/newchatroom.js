@@ -106,7 +106,8 @@ module.exports.newchatroom = (req,res) =>{
             break;
           }
         }
-        if(blocked){
+        console.log(blocked);
+        if(!blocked){
           Account.findOneAndUpdate({
             _id:account[0]._id
           },{

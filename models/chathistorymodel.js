@@ -10,8 +10,10 @@ const ChatHistory  = mongoose.Schema({
       date:{type:String,require:true,default:''},
       time:{type:String,require:true,default:''}
   },
-  notification:{type:String},
-  isdelet:{type:Boolean,require,default:false}
+  reciever:[{
+    username:{type:String, require:true, default:''},
+    read:{type:Boolean , require:true, default:false}
+  }]
 })
 
 ChatHistory.methods.encrypt = (message,password) => {
