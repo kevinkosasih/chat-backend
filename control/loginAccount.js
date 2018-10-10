@@ -59,15 +59,14 @@ module.exports.login = (req,res) => {
       if(err){
         res.send(err)
       }
-
       const data  = JSON.stringify({
-        token:doc._id
+        token:doc._id,
+        username:user.username
       })
       var cipher = crypto.createCipher(algorithm,KeyCookies)
       var crypted = cipher.update(data,'utf8','hex')
       crypted += cipher.final('hex');
       const encryptBtoa = btoa(crypted)
-
       const expDate = new Date(Date.now()+(1000*60*60*24))
       res.cookie('Token',encryptBtoa,{expires:expDate,httpOnly: true})
       return res.send({
@@ -98,7 +97,7 @@ module.exports.dataToken = (req,res) =>{
     }
   }
   if(getToken[0]){
-    let decryptAtob = atob(getToken[1])
+    let decryptAtob = atob(decodeURIComponent(getToken[1]))
     var decipher = crypto.createDecipher(algorithm,KeyCookies)
     var decrypted = decipher.update(decryptAtob,'hex','utf8')
     decrypted += decipher.final('utf8');
@@ -131,7 +130,8 @@ module.exports.dataToken = (req,res) =>{
           });
         }
         const data  = JSON.stringify({
-          token:JSON.parse(decrypted).token
+          token:JSON.parse(decrypted).token,
+          username:JSON.parse(decrypted).username
         })
         var cipher = crypto.createCipher(algorithm,KeyCookies)
         var crypted = cipher.update(data,'utf8','hex')
