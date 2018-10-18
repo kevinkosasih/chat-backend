@@ -26,7 +26,7 @@ module.exports.getchat = (req,res) => {
     }
   }
   if(getToken[0]){
-    let decryptAtob = atob(getToken[1])
+    let decryptAtob = atob(decodeURIComponent(getToken[1]))
     var decipher = crypto.createDecipher(algorithm,KeyCookies)
     var decrypted = decipher.update(decryptAtob,'hex','utf8')
     decrypted += decipher.final('utf8');
@@ -55,18 +55,21 @@ module.exports.getchat = (req,res) => {
             success:false
           })
         }
-        let chatList = []
-        for(let count = 0; count < chatlog.length;count++){
-          let chat = chatlog[count];
-          chat = chat.decrypt(chat.decrypt,chat.chatid)
-          chatlist = chatList.concat(chat)
-          console.log(chat);
-          console.log(chatList);
-        }
 
+        const chatHistory = new ChatHistory();
+        let chatlist = []
+        for(var index in chatlog){
+          let chat = chatHistory.decrypt(chatlog[index].message,'asd');
+          chatlist = chatlist.concat({
+            sender: chatlog[index].sender,
+            message : chat,
+            chatId : chatlog[index].chatId,
+            receiver : chatlog[index].receiver
+          })
+        }
         return res.send({
-          success:true,
-          chatList
+          success : true,
+          message : chatlist
         })
       })
     })

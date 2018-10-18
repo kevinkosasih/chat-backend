@@ -10,11 +10,13 @@ module.exports.add = (req,res) => {
   const {
     username,
     name,
-    picture
+    picture,
+    description
   } = body
   const{
     cookie
   } = headers
+  console.log("ASD: ",body);
   if(!cookie){
     return res.send({
       success:false
@@ -38,7 +40,7 @@ module.exports.add = (req,res) => {
     }
   }
   if(getToken[0]){
-    let decryptAtob = atob(getToken[1])
+    let decryptAtob = atob(decodeURIComponent(getToken[1]))
     var decipher = crypto.createDecipher(algorithm,KeyCookies)
     var decrypted = decipher.update(decryptAtob,'hex','utf8')
     decrypted += decipher.final('utf8');
@@ -84,7 +86,8 @@ module.exports.add = (req,res) => {
           $push: {friends:{
             username:username,
             name: name,
-            picture : picture
+            picture : picture,
+            description : description
           }}
         },{new: true},(err)=>{
           if(err){
@@ -99,7 +102,8 @@ module.exports.add = (req,res) => {
             $pull: {friendrequest:{
               username:username,
               name: name,
-              picture : picture
+              picture : picture,
+              description : description
             }}
           },{new: true},(err)=>{
             if(err){
@@ -154,7 +158,7 @@ module.exports.block = (req,res) => {
     }
   }
   if(getToken[0]){
-    let decryptAtob = atob(getToken[1])
+    let decryptAtob = atob(decodeURIComponent(getToken[1]))
     var decipher = crypto.createDecipher(algorithm,KeyCookies)
     var decrypted = decipher.update(decryptAtob,'hex','utf8')
     decrypted += decipher.final('utf8');

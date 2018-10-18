@@ -35,7 +35,7 @@ module.exports.search = (req,res) => {
 
   if(getToken[0]){
 
-    let decryptAtob = atob(getToken[1])
+    let decryptAtob = atob(decodeURIComponent(getToken[1]))
     var decipher = crypto.createDecipher(algorithm,KeyCookies)
     var decrypted = decipher.update(decryptAtob,'hex','utf8')
     decrypted += decipher.final('utf8');
@@ -77,6 +77,7 @@ module.exports.search = (req,res) => {
             username : username,
             name : checkAccount[0].name,
             picture : checkAccount[0].profilePicture,
+            description : checkAccount[0].description,
             message : "You can't add yourself as friend"
           })
         }
@@ -87,6 +88,7 @@ module.exports.search = (req,res) => {
               username:username,
               name:checkAccount[0].blacklist[blocked].name,
               picture : checkAccount[0].blacklist[blocked].picture,
+              description : checkAccount[0].blacklist[blocked].description,
               message:'You blocked this user'
             })
           }
@@ -98,6 +100,7 @@ module.exports.search = (req,res) => {
               username:username,
               name:checkAccount[0].friendrequest[request].name,
               picture : checkAccount[0].friendrequest[request].picture,
+              description : checkAccount[0].friendrequest[request].description,
               request:true
             })
           }
@@ -109,6 +112,7 @@ module.exports.search = (req,res) => {
               username:username,
               name:checkAccount[0].friends[friend].name,
               picture : checkAccount[0].friends[friend].picture,
+              description : checkAccount[0].friends[friend].description,
               message:'Already added as friend'
             })
           }
@@ -133,7 +137,8 @@ module.exports.search = (req,res) => {
             success:true,
             username: currentAccount[0].username,
             name : currentAccount[0].name,
-            picture : currentAccount[0].profilePicture
+            picture : currentAccount[0].profilePicture,
+            description : currentAccount[0].description
           })
         })
       })

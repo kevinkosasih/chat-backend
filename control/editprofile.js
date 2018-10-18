@@ -1,5 +1,6 @@
-const Account = require ('../models/accountmodel')
+const Account = require ('../models/accountmodel');
 const AccountSession = require('../models/accountsessionmodel');
+const ChatHistory = require ('../models/chathistorymodel');
 const crypto = require('crypto')
 const bcrypt = require('bcrypt');
 const algorithm = 'aes-256-ctr';
@@ -11,7 +12,7 @@ const multer = require('multer');
 module.exports.editprofile = (req,res) =>{
   const {headers,body,file} = req
   const {cookie} = headers
-  const {name} = body
+  const {name,description} = body
   if(!cookie){
     return res.send({
       success:false
@@ -29,7 +30,7 @@ module.exports.editprofile = (req,res) =>{
     }
   }
   if(getToken[0]){
-    let decryptAtob = atob(getToken[1])
+    let decryptAtob = atob(decodeURIComponent(getToken[1]))
     var decipher = crypto.createDecipher(algorithm,KeyCookies)
     var decrypted = decipher.update(decryptAtob,'hex','utf8')
     decrypted += decipher.final('utf8');
@@ -66,8 +67,13 @@ module.exports.editprofile = (req,res) =>{
               console.log("akun: ",akun);
               if(file){
                 const {filename} = file
+                console.log(filename);
                 console.log("file : ",file);
-                Account.update({_id: akun._id}, {$set: {name : name, profilePicture : filename}}).exec()// ngubah diri sendiri
+                Account.update({_id: akun._id},
+                  {$set:
+                    {name : name,
+                    profilePicture : filename,
+                    description : description}}).exec()// ngubah diri sendiri
                 Account.update({'friends.username':akun.username},
                 {$set:
                   {"friends.$[elem].username":akun.username,
@@ -77,13 +83,34 @@ module.exports.editprofile = (req,res) =>{
                 {
                   arrayFilters: [{'elem.username':akun.username}]
                 }
-              ).exec()//ngubah 1 database yang berteman dengan cccccc
-                res.send({
-                  success : true
-                })
-              }
+                ).exec()//ngubah 1 database yang berteman dengan cccccc
+                Account.update({'chatList.username' : akun.username},
+                {
+                  $set:
+                  { "chatList.$[elem].name":name,
+                    "chatList.$[elem].picture" : filename}
+                },
+                {
+                  arrayFilters : [{'elem.username' : akun.username}]
+                }
+                ).exec()
+                Account.update({'friendrequest.username' : akun.username},
+                {
+                  $set:
+                  { "friendrequest.$[elem].name":name,
+                    "friendrequest.$[elem].picture" : filename,
+                    "friendrequest.$[elem].description" : description}
+                },
+                {
+                  arrayFilters : [{'elem.username' : akun.username}]
+                }
+                ).exec()
+                  res.send({
+                    success : true
+                  })
+                }
               else{
-                Account.update({_id: akun._id}, {$set: {name : name}}).exec()
+                Account.update({_id: akun._id}, {$set: {name : name, description : description}}).exec()
                 Account.update({'friends.username':akun.username},
                 {$set:
                   {"friends.$[elem].username":akun.username,
@@ -93,7 +120,28 @@ module.exports.editprofile = (req,res) =>{
                 {
                   arrayFilters: [{'elem.username':akun.username}]
                 }
-              ).exec()
+                ).exec()
+                Account.update({'chatList.username' : akun.username},
+                {
+                  $set:
+                  { "chatList.$[elem].name":name,
+                    "chatList.$[elem].picture":akun.profilePicture}
+                },
+                {
+                  arrayFilters : [{'elem.username' : akun.username}]
+                }
+                ).exec()
+                Account.update({'friendrequest.username' : akun.username},
+                {
+                  $set:
+                  { "friendrequest.$[elem].name":name,
+                    "friendrequest.$[elem].picture" : akun.profilePicture,
+                    "friendrequest.$[elem].description" : description}
+                },
+                {
+                  arrayFilters : [{'elem.username' : akun.username}]
+                }
+                ).exec()
                 res.send({
                   success : true
                 })

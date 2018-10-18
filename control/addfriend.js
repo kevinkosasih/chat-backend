@@ -12,7 +12,6 @@ module.exports.addFriends = (req,res) =>{
     friendlist,
   } = body;
   const {cookie} = headers
-  console.log(friendlist.username);
   if(!cookie){
     return res.send({
       success:false
@@ -36,7 +35,7 @@ module.exports.addFriends = (req,res) =>{
     }
   }
   if(getToken[0]){
-    let decryptAtob = atob(getToken[1])
+    let decryptAtob = atob(decodeURIComponent(getToken[1]))
     var decipher = crypto.createDecipher(algorithm,KeyCookies)
     var decrypted = decipher.update(decryptAtob,'hex','utf8')
     decrypted += decipher.final('utf8');
@@ -74,27 +73,32 @@ module.exports.addFriends = (req,res) =>{
         }
         let userfriendList = [] ,
             userRequesList = []
+
         if(accountid == account[0]._id){
           userfriendList = account[0].friends.concat({
             username:friendlist.username,
             name:friendlist.name,
-            picture : account[1].profilePicture
+            picture : account[1].profilePicture,
+            description : account[1].description
           })
           userRequesList = account[1].friendrequest.concat({
             username:account[0].username,
             name:account[0].name,
-            picture : account[0].profilePicture
+            picture : account[0].profilePicture,
+            description : account[0].description
           })
         } else {
           userfriendList = account[1].friends.concat({
             username:friendlist.username,
             name:friendlist.name,
-            picture : account[0].profilePicture
+            picture : account[0].profilePicture,
+            description : account[0].description
           })
           userRequesList = account[0].friendrequest.concat({
             username:account[1].username,
             name: account[1].name,
-            picture : account[1].profilePicture
+            picture : account[1].profilePicture,
+            description : account[1].description
           })
         }
         Account.findOneAndUpdate({
@@ -110,7 +114,6 @@ module.exports.addFriends = (req,res) =>{
               message: 'Error: Server error'
             });
           }
-          console.log("INI APA: ",friendlist);
           Account.findOneAndUpdate({
             username:friendlist.username
           },{
