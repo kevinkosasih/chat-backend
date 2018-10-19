@@ -55,16 +55,22 @@ module.exports.getchat = (req,res) => {
             success:false
           })
         }
-
+        if(chatlog.length == 0){
+          return res.send({
+            success : false,
+          })
+        }
         const chatHistory = new ChatHistory();
         let chatlist = []
         for(var index in chatlog){
           let chat = chatHistory.decrypt(chatlog[index].message,'asd');
+          console.log(chatlog);
           chatlist = chatlist.concat({
             sender: chatlog[index].sender,
             message : chat,
             chatId : chatlog[index].chatId,
-            receiver : chatlog[index].receiver
+            receiver : chatlog[index].receiver,
+            time : chatlog[index].timestamp.time
           })
         }
         return res.send({

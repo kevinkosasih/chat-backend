@@ -96,8 +96,17 @@ const port = 3000;
 io.on('connection', (client) => {
   console.log("connected");
   client.on('sendChat', (message) => {
-    client.broadcast.emit(message.reciever,{message,send:1});
-    client.emit(message.sender,{message,send:0});
+    client.broadcast.emit(message.chatId,{message});
+    client.emit(message.chatId,{message});
+  });
+
+  client.on('newchatlist', (message) => {
+    client.broadcast.emit('chatlist'+message.reciever,{message,send:1});
+    client.emit('chatlist'+message.sender,{message,send:0});
+  });
+
+  client.on('closechatroom', (message) => {
+    client.emit('chatroom'+message,message);
   });
 });
 // port for socket.io (can be change || cannot same with port app)
