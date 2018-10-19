@@ -12,6 +12,7 @@ module.exports.savechat = (req,res) =>{
   const {
     chatId,
     message,
+    senderUsername,
     sender,
     time,
     date,
@@ -73,14 +74,16 @@ module.exports.savechat = (req,res) =>{
         const {filename} = file;
         newChatHistory.chatId = chatId;
         newChatHistory.message = newChatHistory.encrypt(message,"asd");
-        newChatHistory.sender = sender;
+        newChatHistory.sender.username = senderUsername;
+        newChatHistory.sender.name = sender;
         newChatHistory.timestamp.date = date;
         newChatHistory.timestamp.time = time;
         newChatHistory.attachment = filename;
       } else {
         newChatHistory.chatId = chatId;
         newChatHistory.message = newChatHistory.encrypt(message,"asd");
-        newChatHistory.sender = sender;
+        newChatHistory.sender.username = senderUsername;
+        newChatHistory.sender.name = sender;
         newChatHistory.timestamp.date = date;
         newChatHistory.timestamp.time = time;
       }
@@ -93,7 +96,8 @@ module.exports.savechat = (req,res) =>{
         }
         return res.send({
           success:true,
-          message:'Message sent'
+          message:'Message sent',
+          time : time
         })
       })
     })

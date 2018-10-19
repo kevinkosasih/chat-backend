@@ -6,14 +6,15 @@ const algorithm = 'aes-256-ctr'
 const ChatHistory  = mongoose.Schema({
   chatId:{type:String,require:true,default:''},
   message:{type:String,require:true,default:''},
-  sender:{type:String,require:true,default:''},
+  sender:{
+    username : {type : String, require : true, default:''},
+    name : {type : String, require : true, default:''}
+  },
   timestamp:{
       date:{type:Number,require:true,default:''},
       time:{type:String,require:true,default:''}
   },
   attachment : {type : String},
-  notification:{type : String},
-  isdelet:{type:Boolean,require,default:false},
   reciever:[{
     username:{type:String, require:true, default:''},
     read:{type:Boolean , require:true, default:false}
