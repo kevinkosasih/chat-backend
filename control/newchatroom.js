@@ -85,7 +85,9 @@ module.exports.newchatroom = (req,res) =>{
                     chatList:{
                       chatId:chatid,
                       username:account[akun].username,
-                      name:account[akun].name
+                      name:account[akun].name,
+                      picture : account[akun].profilePicture,
+                      createdDate : new Date()
                     }
                   }
                 },{new: true},(err) =>{
@@ -106,8 +108,15 @@ module.exports.newchatroom = (req,res) =>{
             break;
           }
         }
-        console.log(blocked);
         if(!blocked){
+          for(var index in account[0].chatList){
+            if(account[0].chatList[index].username == user){
+              return res.send({
+                success:true,
+                chatId : account[0].chatList[index].chatId
+              })
+            }
+          }
           Account.findOneAndUpdate({
             _id:account[0]._id
           },{
@@ -115,10 +124,12 @@ module.exports.newchatroom = (req,res) =>{
               chatList:{
                 chatId:chatid,
                 username:account[1].username,
-                name:account[1].name
+                name:account[1].name,
+                picture : account[1].profilePicture,
+                createdDate : new Date()
               }
             }
-          },{new: true},(err,result1)=>{
+          },{new: true},(err)=>{
                 if(err){
                   return res.send({
                     success:false,
@@ -132,10 +143,12 @@ module.exports.newchatroom = (req,res) =>{
                     chatList:{
                       chatId:chatid,
                       username:account[0].username,
-                      name:account[0].name
+                      name:account[0].name,
+                      picture : account[0].profilePicture,
+                      createdDate : new Date()
                     }
                   }
-                },{new: true},(err,result2)=>{
+                },{new: true},(err)=>{
                     if(err){
                       return res.send({
                         success:false,
@@ -144,12 +157,12 @@ module.exports.newchatroom = (req,res) =>{
                     }
                     return res.send({
                       success:true,
-                      chatid:chatid,
+                      chatId : chatid
                     })
                 })
           })
         }
       })
-  })
+    })
   }
 };

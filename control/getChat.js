@@ -55,18 +55,29 @@ module.exports.getchat = (req,res) => {
             success:false
           })
         }
-        let chatList = []
-        for(let count = 0; count < chatlog.length;count++){
-          let chat = chatlog[count];
-          chat = chat.decrypt(chat.decrypt,chat.chatid)
-          chatlist = chatList.concat(chat)
-          console.log(chat);
-          console.log(chatList);
+        if(chatlog.length == 0){
+          return res.send({
+            success : false,
+            chatId : token
+          })
         }
-
+        const chatHistory = new ChatHistory();
+        let chatlist = []
+        for(var index in chatlog){
+          let chat = chatHistory.decrypt(chatlog[index].message,'asd');
+          chatlist = chatlist.concat({
+            sender: chatlog[index].sender,
+            message : chat,
+            chatId : chatlog[index].chatId,
+            receiver : chatlog[index].receiver,
+            time : chatlog[index].timeStamp,
+            receiver : chatlog[index].reciever
+          })
+        }
         return res.send({
-          success:true,
-          chatList
+          success : true,
+          message : chatlist,
+          chatId : token
         })
       })
     })

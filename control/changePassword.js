@@ -42,7 +42,6 @@ module.exports.changePassword = (req,res) =>{
             message: 'Error: Server error'
           });
         }
-        console.log("id: ",JSON.parse(decrypted));
         if (sessions.length != 1) {
           return res.send({
             success: false,
@@ -51,7 +50,6 @@ module.exports.changePassword = (req,res) =>{
 
         } else {
           const {accountid} = sessions[0]
-          console.log("Session: ",sessions[0]);
           Account.find({
             _id:accountid
           },(err,account) => {
@@ -63,7 +61,6 @@ module.exports.changePassword = (req,res) =>{
             }
             else if (account) {
               const akun = account[0];
-              console.log("ini Chibay: ",account);
               if(oldPass == ""){
                 res.send({
                   success: false,
@@ -71,10 +68,6 @@ module.exports.changePassword = (req,res) =>{
                 })
               }
               else if(bcrypt.compareSync(oldPass, akun.password)){
-                console.log("SAMA KNTL");
-                console.log("oldPass: "+oldPass);
-                console.log("newPass: "+newPass);
-
                 const account = new Account();
                 res.send({
                   success: true,
@@ -84,7 +77,6 @@ module.exports.changePassword = (req,res) =>{
 
               }
               else{
-                console.log("BEDA KNTL");
                 res.send({
                   success : false,
                   message : "Wrong old password"

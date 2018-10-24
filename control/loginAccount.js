@@ -107,7 +107,6 @@ module.exports.dataToken = (req,res) =>{
       isDeleted:false
     },(err,data) =>{
       if (err) {
-        console.log(err);
         return res.send({
           success: false,
           message: 'Error: Server error'
@@ -123,7 +122,6 @@ module.exports.dataToken = (req,res) =>{
         _id:data[0].accountid
       },{password:0,_id:0},(err,account)=>{
         if (err) {
-          console.log(err);
           return res.send({
             success: false,
             message: 'Error: Server error'

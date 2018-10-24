@@ -73,23 +73,32 @@ module.exports.addFriends = (req,res) =>{
         }
         let userfriendList = [] ,
             userRequesList = []
+
         if(accountid == account[0]._id){
           userfriendList = account[0].friends.concat({
             username:friendlist.username,
-            name:friendlist.name
+            name:friendlist.name,
+            picture : account[1].profilePicture,
+            description : account[1].description
           })
           userRequesList = account[1].friendrequest.concat({
             username:account[0].username,
-            name:account[0].name
+            name:account[0].name,
+            picture : account[0].profilePicture,
+            description : account[0].description
           })
         } else {
           userfriendList = account[1].friends.concat({
             username:friendlist.username,
-            name:friendlist.name
+            name:friendlist.name,
+            picture : account[0].profilePicture,
+            description : account[0].description
           })
           userRequesList = account[0].friendrequest.concat({
             username:account[1].username,
-            name:account[1].name
+            name: account[1].name,
+            picture : account[1].profilePicture,
+            description : account[1].description
           })
         }
         Account.findOneAndUpdate({
@@ -120,7 +129,8 @@ module.exports.addFriends = (req,res) =>{
             }
             return res.send({
               success:true,
-              message:'success'
+              message:'Added as a friend',
+              picture : friendlist.picture
             })
           })
         })
