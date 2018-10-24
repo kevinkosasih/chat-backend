@@ -84,8 +84,15 @@ const port = 3001;
 io.on('connection', (client) => {
   console.log("connected");
   client.on('sendChat', (message) => {
+    console.log(message);
     client.broadcast.emit(message.reciever,{message,send:1});
     client.emit(message.sender,{message,send:0});
+  });
+
+  client.on('newchatlist', (message) => {
+    console.log(message);
+    client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatid:message.chatid});
+    client.emit('chatlist'+message.myusername,{username:message.otherusername,name:message.othername,chatid:message.chatid});
   });
 });
 // port for socket.io (can be change || cannot same with port app)

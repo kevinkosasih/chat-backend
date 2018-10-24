@@ -77,6 +77,7 @@ module.exports.newchatroom = (req,res) =>{
           if(account[akun].username == user){
             for(var block in account[akun].blacklist){
               if(account[akun].blacklist[block].username == JSON.parse(decrypted).username){
+                blocked = true
                 Account.findOneAndUpdate({
                   _id : accountid
                 },{
@@ -94,7 +95,6 @@ module.exports.newchatroom = (req,res) =>{
                       message:'Error: Server error'
                     })
                   }
-                  blocked = true
                   return res.send({
                     success:true,
                     message:"block"
@@ -118,7 +118,7 @@ module.exports.newchatroom = (req,res) =>{
                 name:account[1].name
               }
             }
-          },{new: true},(err)=>{
+          },{new: true},(err,result1)=>{
                 if(err){
                   return res.send({
                     success:false,
@@ -135,7 +135,7 @@ module.exports.newchatroom = (req,res) =>{
                       name:account[0].name
                     }
                   }
-                },{new: true},(err)=>{
+                },{new: true},(err,result2)=>{
                     if(err){
                       return res.send({
                         success:false,
@@ -143,7 +143,8 @@ module.exports.newchatroom = (req,res) =>{
                       })
                     }
                     return res.send({
-                      success:true
+                      success:true,
+                      chatid:chatid,
                     })
                 })
           })
