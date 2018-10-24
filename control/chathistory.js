@@ -14,27 +14,22 @@ module.exports.savechat = (req,res) =>{
     message,
     senderUsername,
     sender,
-    time,
-    date,
-    reciever
+    timeStamp,
+    recieve
   }=body
   const {cookie} = headers;
+  console.log(body);
   if(!cookie){
     return res.send({
       success:false
     })
   }
-  if(!chatId || !message || !sender || !time){
+  if(!chatId || !message || !sender || !timeStamp){
     return res.send({
       success:false,
       message:'Error: cannot be blank'
     })
   }
-  console.log("chat ID : ",chatId);
-  console.log("message : ",message);
-  console.log("sender : ",sender);
-  console.log("time : ",time);
-  console.log("date : ",date);
 
   let getcookie  = cookie.split(";")
   let getToken = []
@@ -76,16 +71,16 @@ module.exports.savechat = (req,res) =>{
         newChatHistory.message = newChatHistory.encrypt(message,"asd");
         newChatHistory.sender.username = senderUsername;
         newChatHistory.sender.name = sender;
-        newChatHistory.timestamp.date = date;
-        newChatHistory.timestamp.time = time;
+        newChatHistory.timeStamp = timeStamp;
         newChatHistory.attachment = filename;
+        newChatHistory.reciever = [{username : recieve}];
       } else {
         newChatHistory.chatId = chatId;
         newChatHistory.message = newChatHistory.encrypt(message,"asd");
         newChatHistory.sender.username = senderUsername;
         newChatHistory.sender.name = sender;
-        newChatHistory.timestamp.date = date;
-        newChatHistory.timestamp.time = time;
+        newChatHistory.timeStamp = timeStamp;
+        newChatHistory.reciever = [{username : recieve}];
       }
       newChatHistory.save((err) =>{
         if(err){
@@ -97,7 +92,7 @@ module.exports.savechat = (req,res) =>{
         return res.send({
           success:true,
           message:'Message sent',
-          time : time
+          time : timeStamp
         })
       })
     })

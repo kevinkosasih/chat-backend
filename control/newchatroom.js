@@ -78,8 +78,6 @@ module.exports.newchatroom = (req,res) =>{
             for(var block in account[akun].blacklist){
               if(account[akun].blacklist[block].username == JSON.parse(decrypted).username){
                 blocked = true
-                console.log("akun: ",akun);
-                console.log("account: ",account);
                 Account.findOneAndUpdate({
                   _id : accountid
                 },{
@@ -88,7 +86,8 @@ module.exports.newchatroom = (req,res) =>{
                       chatId:chatid,
                       username:account[akun].username,
                       name:account[akun].name,
-                      picture : account[akun].profilePicture
+                      picture : account[akun].profilePicture,
+                      createdDate : new Date()
                     }
                   }
                 },{new: true},(err) =>{
@@ -126,7 +125,8 @@ module.exports.newchatroom = (req,res) =>{
                 chatId:chatid,
                 username:account[1].username,
                 name:account[1].name,
-                picture : account[1].profilePicture
+                picture : account[1].profilePicture,
+                createdDate : new Date()
               }
             }
           },{new: true},(err)=>{
@@ -144,7 +144,8 @@ module.exports.newchatroom = (req,res) =>{
                       chatId:chatid,
                       username:account[0].username,
                       name:account[0].name,
-                      picture : account[0].profilePicture
+                      picture : account[0].profilePicture,
+                      createdDate : new Date()
                     }
                   }
                 },{new: true},(err)=>{

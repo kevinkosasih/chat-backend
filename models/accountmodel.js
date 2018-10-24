@@ -19,7 +19,8 @@ const AccountModel = mongoose.Schema({
     chatId:{type:String},
     username:{type:String},
     name:{type:String},
-    picture : {type : String}
+    picture : {type : String},
+    createdDate : {type : Date}
   }],
   blacklist:[{
     username:{type:String},

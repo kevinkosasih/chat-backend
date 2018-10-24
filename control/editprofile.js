@@ -64,11 +64,8 @@ module.exports.editprofile = (req,res) =>{
             }
             else if (account) {
               const akun = account[0];//account cccccc
-              console.log("akun: ",akun);
               if(file){
                 const {filename} = file
-                console.log(filename);
-                console.log("file : ",file);
                 Account.update({_id: akun._id},
                   {$set:
                     {name : name,
@@ -81,7 +78,8 @@ module.exports.editprofile = (req,res) =>{
                   "friends.$[elem].picture":filename}
                 },
                 {
-                  arrayFilters: [{'elem.username':akun.username}]
+                  arrayFilters: [{'elem.username':akun.username}],
+                  multi:true
                 }
                 ).exec()//ngubah 1 database yang berteman dengan cccccc
                 Account.update({'chatList.username' : akun.username},
@@ -91,7 +89,8 @@ module.exports.editprofile = (req,res) =>{
                     "chatList.$[elem].picture" : filename}
                 },
                 {
-                  arrayFilters : [{'elem.username' : akun.username}]
+                  arrayFilters : [{'elem.username' : akun.username}],
+                  multi:true
                 }
                 ).exec()
                 Account.update({'friendrequest.username' : akun.username},
@@ -102,11 +101,13 @@ module.exports.editprofile = (req,res) =>{
                     "friendrequest.$[elem].description" : description}
                 },
                 {
-                  arrayFilters : [{'elem.username' : akun.username}]
+                  arrayFilters : [{'elem.username' : akun.username}],
+                  multi:true
                 }
                 ).exec()
                   res.send({
-                    success : true
+                    success : true,
+                    photo:filename
                   })
                 }
               else{
@@ -118,7 +119,8 @@ module.exports.editprofile = (req,res) =>{
                   "friends.$[elem].picture":akun.profilePicture}
                 },
                 {
-                  arrayFilters: [{'elem.username':akun.username}]
+                  arrayFilters: [{'elem.username':akun.username}],
+                  multi:true
                 }
                 ).exec()
                 Account.update({'chatList.username' : akun.username},
@@ -128,7 +130,8 @@ module.exports.editprofile = (req,res) =>{
                     "chatList.$[elem].picture":akun.profilePicture}
                 },
                 {
-                  arrayFilters : [{'elem.username' : akun.username}]
+                  arrayFilters : [{'elem.username' : akun.username}],
+                  multi:true
                 }
                 ).exec()
                 Account.update({'friendrequest.username' : akun.username},
@@ -139,7 +142,8 @@ module.exports.editprofile = (req,res) =>{
                     "friendrequest.$[elem].description" : description}
                 },
                 {
-                  arrayFilters : [{'elem.username' : akun.username}]
+                  arrayFilters : [{'elem.username' : akun.username}],
+                  multi:true
                 }
                 ).exec()
                 res.send({

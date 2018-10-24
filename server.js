@@ -73,6 +73,7 @@ const editprofile = require('./control/editprofile')
 const request = require('./control/addblock')
 const checkrequest = require('./control/checkrequest')
 const search = require('./control/searchfriend')
+const notification = require('./control/notification')
 
 //routing API
 app.get('/getdata',loginAccount.dataToken)
@@ -90,6 +91,8 @@ app.put('/Friends', addFriends.addFriends)
 app.put('/addchatroom',newChatRoom.newchatroom)
 app.put('/changepassword',changePassword.changePassword)
 app.put('/editprofile',uploadImage,editprofile.editprofile)
+app.put('/readNotif',notification.read)
+
 //port API (can be change)
 const port = 3000;
 //openconnection for socket.io
@@ -101,12 +104,20 @@ io.on('connection', (client) => {
   });
 
   client.on('newchatlist', (message) => {
-    client.broadcast.emit('chatlist'+message.reciever,{message,send:1});
-    client.emit('chatlist'+message.sender,{message,send:0});
+    client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatid:message.chatId,picture : message.mypicture});
+    client.emit('chatlist'+message.myusername,{username:message.otherusername,name:message.othername,chatid:message.chatId,picture : message.otherpicture});
+  });
+
+  client.on('editprofile', (message) => {
+    console.log(message);
+    client.broadcast.emit('edit'+message.username,{message});
   });
 
   client.on('closechatroom', (message) => {
-    client.emit('chatroom'+message,message);
+    client.emit('closechatroom'+message,message);
+  });
+  client.on('openchatroom', (message) => {
+    client.emit('openchatroom'+message,message);
   });
 });
 // port for socket.io (can be change || cannot same with port app)

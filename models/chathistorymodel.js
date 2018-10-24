@@ -10,10 +10,7 @@ const ChatHistory  = mongoose.Schema({
     username : {type : String, require : true, default:''},
     name : {type : String, require : true, default:''}
   },
-  timestamp:{
-      date:{type:Number,require:true,default:''},
-      time:{type:String,require:true,default:''}
-  },
+  timeStamp:{ type : Date , require : true , default : ''},
   attachment : {type : String},
   reciever:[{
     username:{type:String, require:true, default:''},

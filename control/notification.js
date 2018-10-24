@@ -5,10 +5,11 @@ const algorithm = 'aes-256-ctr'
 const KeyCookies = "setCookiesTokenChatApp"
 const atob = require('atob')
 
-module.exports.getchat = (req,res) => {
+module.exports.read = (req,res) => {
   const{body,headers} = req
   const {cookie} = headers
-  const {token} = body
+  const {token,username} = body
+  console.log(username);
   if(!cookie){
     return res.send({
       success:false
@@ -58,26 +59,23 @@ module.exports.getchat = (req,res) => {
         if(chatlog.length == 0){
           return res.send({
             success : false,
-            chatId : token
           })
         }
-        const chatHistory = new ChatHistory();
-        let chatlist = []
-        for(var index in chatlog){
-          let chat = chatHistory.decrypt(chatlog[index].message,'asd');
-          chatlist = chatlist.concat({
-            sender: chatlog[index].sender,
-            message : chat,
-            chatId : chatlog[index].chatId,
-            receiver : chatlog[index].receiver,
-            time : chatlog[index].timeStamp,
-            receiver : chatlog[index].reciever
-          })
-        }
-        return res.send({
-          success : true,
-          message : chatlist,
+        ChatHistory.update({
           chatId : token
+        },
+          {$set :
+            {
+              "reciever.$[elem].read": true
+            }
+          },
+          {
+            arrayFilters: [{"elem.username":username}],
+            multi:true
+          }
+        ).exec()
+        return res.send({
+          success:true
         })
       })
     })
