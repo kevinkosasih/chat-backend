@@ -15,10 +15,10 @@ module.exports.savechat = (req,res) =>{
     senderUsername,
     sender,
     timeStamp,
+    date,
     recieve
   }=body
   const {cookie} = headers;
-  console.log(body);
   if(!cookie){
     return res.send({
       success:false
@@ -72,6 +72,7 @@ module.exports.savechat = (req,res) =>{
         newChatHistory.sender.username = senderUsername;
         newChatHistory.sender.name = sender;
         newChatHistory.timeStamp = timeStamp;
+        newChatHistory.date = date;
         newChatHistory.attachment = filename;
         newChatHistory.reciever = [{username : recieve}];
       } else {
@@ -80,6 +81,7 @@ module.exports.savechat = (req,res) =>{
         newChatHistory.sender.username = senderUsername;
         newChatHistory.sender.name = sender;
         newChatHistory.timeStamp = timeStamp;
+        newChatHistory.date = date;
         newChatHistory.reciever = [{username : recieve}];
       }
       newChatHistory.save((err) =>{

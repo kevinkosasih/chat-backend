@@ -71,6 +71,7 @@ module.exports.getchat = (req,res) => {
             chatId : chatlog[index].chatId,
             receiver : chatlog[index].receiver,
             time : chatlog[index].timeStamp,
+            date : chatlog[index].date,
             receiver : chatlog[index].reciever
           })
         }

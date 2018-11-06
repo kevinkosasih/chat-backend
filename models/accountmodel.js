@@ -20,6 +20,7 @@ const AccountModel = mongoose.Schema({
     username:{type:String},
     name:{type:String},
     picture : {type : String},
+    description : {type : String},
     createdDate : {type : Date}
   }],
   blacklist:[{

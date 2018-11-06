@@ -1,28 +1,25 @@
 const Account = require('../models/accountmodel');
 const AccountSession = require('../models/accountsessionmodel');
-const crypto = require('crypto')
-const algorithm = 'aes-256-ctr'
-const KeyCookies = "setCookiesTokenChatApp"
-const atob = require('atob')
+const crypto = require('crypto');
+const algorithm = 'aes-256-ctr';
+const KeyCookies = "setCookiesTokenChatApp";
+const atob = require('atob');
 
 module.exports.add = (req,res) => {
-  const {headers,body} = req
+  const {headers,body} = req;
   const {
-    username,
-    name,
-    picture,
-    description
-  } = body
+    data
+  } = body;
   const{
     cookie
-  } = headers
-  console.log("ASD: ",body);
+  } = headers;
+  console.log("body: ",body);
   if(!cookie){
     return res.send({
       success:false
     })
   }
-  if(!username && !name){
+  if(!data){
     return res.send({
       success:false,
       message:'Error: Cannot be blank',
@@ -72,7 +69,6 @@ module.exports.add = (req,res) => {
             message:'Error: Server error'
           })
         }
-
         if(currentAccount.length != 1){
           return res.send({
             success: false,
@@ -84,10 +80,10 @@ module.exports.add = (req,res) => {
           _id:currentAccount[0]._id
         }, {
           $push: {friends:{
-            username:username,
-            name: name,
-            picture : picture,
-            description : description
+            username:data.username,
+            name: data.name,
+            picture : data.picture,
+            description : data.description
           }}
         },{new: true},(err)=>{
           if(err){
@@ -100,12 +96,9 @@ module.exports.add = (req,res) => {
             _id:currentAccount[0]._id
           }, {
             $pull: {friendrequest:{
-              username:username,
-              name: name,
-              picture : picture,
-              description : description
+              username:data.username
             }}
-          },{new: true},(err)=>{
+          },(err)=>{
             if(err){
               return res.send ({
                 success:false,
@@ -116,7 +109,7 @@ module.exports.add = (req,res) => {
             return res.send ({
               success:true,
               message : "Added as a friend",
-              picture : picture
+              picture : data.picture
             })
           })
         })
@@ -128,9 +121,7 @@ module.exports.add = (req,res) => {
 module.exports.block = (req,res) => {
   const {headers,body} = req
   const {
-    username,
-    name,
-    picture
+    data
   } = body
   const{
     cookie
@@ -140,7 +131,7 @@ module.exports.block = (req,res) => {
       success:false
     })
   }
-  if(!username){
+  if(!data){
     return res.send({
       success:false,
       message:'Error: Cannot be blank',
@@ -202,9 +193,10 @@ module.exports.block = (req,res) => {
           _id:currentAccount[0]._id
         }, {
           $push: {blacklist:{
-            username:username,
-            name: name,
-            picture : picture
+            username:data.username,
+            name: data.name,
+            picture : data.picture,
+            description : data.description
           }}
         },{new: true},(err)=>{
           if(err){
@@ -217,9 +209,7 @@ module.exports.block = (req,res) => {
             _id:currentAccount[0]._id
           }, {
             $pull: {friendrequest:{
-              username:username,
-              name: name,
-              picture : picture
+              username:data.username
             }}
           },{new: true},(err)=>{
             if(err){
@@ -232,7 +222,7 @@ module.exports.block = (req,res) => {
             return res.send ({
               success:true,
               message : "You block this user",
-              picture : picture
+              picture : data.picture
             })
           })
         })

@@ -38,7 +38,7 @@ module.exports.login = (req,res) => {
     if(currentAccount.length != 1){
       return res.send({
         success: false,
-        message: 'Error: Username or password is wrong.'
+        message: 'Username or password is wrong.'
       });
     }
 
@@ -47,7 +47,7 @@ module.exports.login = (req,res) => {
     if(!user.validPassword(password)){
       return res.send({
         success: false,
-        message: 'Error: Username or password is wrong.'
+        message: 'Username or password is wrong.'
       });
     }
 
@@ -138,9 +138,10 @@ module.exports.dataToken = (req,res) =>{
 
         const expDate = new Date(Date.now()+(1000*60*60*24))
         res.cookie('Token',encryptBtoa,{expires:expDate,httpOnly: true})
+        const myaccount = account[0]
         return res.send({
           success:true,
-          akun:account[0]
+          akun:myaccount
         })
       })
     })

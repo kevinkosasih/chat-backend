@@ -99,23 +99,40 @@ const port = 3000;
 io.on('connection', (client) => {
   console.log("connected");
   client.on('sendChat', (message) => {
+    console.log(message);
     client.broadcast.emit(message.chatId,{message});
     client.emit(message.chatId,{message});
   });
 
   client.on('newchatlist', (message) => {
-    client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatid:message.chatId,picture : message.mypicture});
-    client.emit('chatlist'+message.myusername,{username:message.otherusername,name:message.othername,chatid:message.chatId,picture : message.otherpicture});
+    client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatId:message.chatId,picture : message.mypicture,description : message.mydescription});
+    client.emit('chatlist'+message.myusername,{username:message.otherusername,name:message.othername,chatId:message.chatId,picture : message.otherpicture,description : message.otherdescription});
   });
 
   client.on('editprofile', (message) => {
-    console.log(message);
     client.broadcast.emit('edit'+message.username,{message});
+  });
+
+  client.on('newfriend', (message) => {
+    client.emit('newfriend'+message.myUsername,message);
+  });
+
+  client.on('blockfriend', (message) => {
+    client.emit('blockfriend'+message.myUsername,message);
+  });
+
+  client.on('blockchat', (message) => {
+    client.emit('blockchat'+message,message);
+  });
+
+  client.on('readchat', (message) => {
+    client.broadcast.emit('readchat'+message,message);
   });
 
   client.on('closechatroom', (message) => {
     client.emit('closechatroom'+message,message);
   });
+
   client.on('openchatroom', (message) => {
     client.emit('openchatroom'+message,message);
   });
