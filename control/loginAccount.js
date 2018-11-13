@@ -16,13 +16,13 @@ module.exports.login = (req,res) => {
   if (!username) {
       return res.send({
         success: false,
-        message: 'Error: username cannot be blank.'
+        message: 'Username cannot be blank.'
       });
     }
   if (!password) {
       return res.send({
         success: false,
-        message: 'Error: Password cannot be blank.'
+        message: 'Password cannot be blank.'
       });
   }
 
