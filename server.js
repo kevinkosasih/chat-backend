@@ -94,7 +94,7 @@ app.put('/editprofile',uploadImage,editprofile.editprofile)
 app.put('/readNotif',notification.read)
 
 //port API (can be change)s
-const port = 3000;
+const port = 3001;
 //openconnection for socket.io
 io.on('connection', (client) => {
   console.log("connected");

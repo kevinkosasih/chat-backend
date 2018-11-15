@@ -109,14 +109,7 @@ module.exports.newchatroom = (req,res) =>{
           }
         }
         if(!blocked){
-          for(var index in account[0].chatList){
-            if(account[0].chatList[index].username == user){
-              return res.send({
-                success:true,
-                chatId : account[0].chatList[index].chatId
-              })
-            }
-          }
+
           Account.findOneAndUpdate({
             _id:account[0]._id
           },{
