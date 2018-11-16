@@ -11,6 +11,7 @@ module.exports.newchatroom = (req,res) =>{
       chatid,
       user
   } = body;
+
   const {cookie} = headers
   if(!cookie){
     return res.send({
@@ -87,6 +88,7 @@ module.exports.newchatroom = (req,res) =>{
                       username:account[akun].username,
                       name:account[akun].name,
                       picture : account[akun].profilePicture,
+                      description : account[akun].description,
                       createdDate : new Date()
                     }
                   }
@@ -97,6 +99,7 @@ module.exports.newchatroom = (req,res) =>{
                       message:'Error: Server error'
                     })
                   }
+
                   return res.send({
                     success:true,
                     message:"block"
@@ -109,7 +112,22 @@ module.exports.newchatroom = (req,res) =>{
           }
         }
         if(!blocked){
+<<<<<<< HEAD
 
+=======
+          // for(var akun in account){
+          //   if(account[akun].chatList.length != 0){
+          //     for(var index in account[akun].chatList){
+          //       if(account[akun].chatList[index].username == user){
+          //         return res.send({
+          //           success:true,
+          //           chatId : account[akun].chatList[index].chatId
+          //         })
+          //       }
+          //     }
+          //   }
+          // }
+>>>>>>> 0a952361fa24a90d44ab5f05347d07b61f3c8cc3
           Account.findOneAndUpdate({
             _id:account[0]._id
           },{
@@ -119,6 +137,7 @@ module.exports.newchatroom = (req,res) =>{
                 username:account[1].username,
                 name:account[1].name,
                 picture : account[1].profilePicture,
+                description : account[1].description,
                 createdDate : new Date()
               }
             }
@@ -138,6 +157,7 @@ module.exports.newchatroom = (req,res) =>{
                       username:account[0].username,
                       name:account[0].name,
                       picture : account[0].profilePicture,
+                      description : account[0].description,
                       createdDate : new Date()
                     }
                   }
@@ -148,9 +168,11 @@ module.exports.newchatroom = (req,res) =>{
                         message:'Error: Server Error'
                       })
                     }
+
                     return res.send({
                       success:true,
-                      chatId : chatid
+                      chatId : chatid,
+                      message: "Terbuat"
                     })
                 })
           })

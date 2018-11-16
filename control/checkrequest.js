@@ -8,7 +8,7 @@ const atob = require('atob')
 module.exports.cekRequest = (req,res) =>{
   const {body,headers} = req;
   const {
-    friendlist,
+    username
   } = body;
   const {cookie} = headers
   if(!cookie){
@@ -16,7 +16,8 @@ module.exports.cekRequest = (req,res) =>{
       success:false
     })
   }
-  if(!friendlist|| !friendlist.username|| !friendlist.name){
+  console.log("username: ",username);
+  if(!username){
     return res.send({
       success:false,
       message:'Error: Cannot be blank',
@@ -59,7 +60,7 @@ module.exports.cekRequest = (req,res) =>{
 
       const {accountid} = currentToken[0]
       Account.find({
-        $and:[{_id:accountid},{friendrequest}]
+        $and:[{_id:accountid},{'friendrequest.username':username}]
       },(err,account)=>{
         if(err){
           return res.send({
@@ -69,14 +70,14 @@ module.exports.cekRequest = (req,res) =>{
         }
         if(account.length != 0){
           return res.send({
-            success:true,
-            requested:true,
-            message:'not yet added as friends'
+            success : false,
+            requested : true,
+            message : 'not yet added as friends'
           })
         }
         return res.send({
-          success:true,
-          requested:false
+          success : true,
+          requested : false
         })
       })
     })

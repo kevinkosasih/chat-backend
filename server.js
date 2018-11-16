@@ -1,5 +1,9 @@
+<<<<<<< HEAD
  const express = require('express');
 const path = require('path');
+=======
+const express = require('express');
+>>>>>>> 0a952361fa24a90d44ab5f05347d07b61f3c8cc3
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -9,38 +13,14 @@ const helmet = require('helmet');
 const app = express();
 const io = require('socket.io')();
 const cookieParser = require('cookie-parser');
-const multer = require('multer');
 const fs = require('file-system');
-
-const storageProfilePhoto = multer.diskStorage({
-
-  destination: function (req, file, cb) {
-    cb(null, './uploads/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, new Date().toISOString().replace(/:/g,'-') + '-' + file.originalname)
-  }
-})
-
-const uploadImage = multer({storage : storageProfilePhoto, limits: {fileSize: 1000000, files:1}}).single('Image')
-
-const storageAttachment = multer.diskStorage({
-
-  destination: function (req, file, cb) {
-    cb(null, './attachment/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, new Date().toISOString().replace(/:/g,'-') + '-' + file.originalname)
-  }
-})
-
-const attachPhoto = multer({storage : storageAttachment, limits: {fileSize: 1000000, files:1}}).single('attachment')
 
 app.use(morgan('common'))
 app.use (helmet())
 //middleware using cors and bodyParser
 app.use(cors());
 app.use(express.static('./uploads'))
+app.use(express.static('./attachment'))
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(cookieParser());
@@ -83,14 +63,14 @@ app.post('/getchat',getChat.getchat)
 app.post('/login',loginAccount.login)
 app.post('/regisnew',regisAccount.newRegis)
 app.post('/search',search.search)
-app.post('/chat',attachPhoto,chathitory.savechat)
+app.post('/chat',chathitory.savechat)
 app.post('/check',checkrequest.cekRequest)
 app.put('/add',request.add)
 app.put('/block',request.block)
 app.put('/Friends', addFriends.addFriends)
 app.put('/addchatroom',newChatRoom.newchatroom)
 app.put('/changepassword',changePassword.changePassword)
-app.put('/editprofile',uploadImage,editprofile.editprofile)
+app.put('/editprofile',editprofile.editprofile)
 app.put('/readNotif',notification.read)
 
 //port API (can be change)s
@@ -99,23 +79,44 @@ const port = 3001;
 io.on('connection', (client) => {
   console.log("connected");
   client.on('sendChat', (message) => {
+    console.log(message);
     client.broadcast.emit(message.chatId,{message});
     client.emit(message.chatId,{message});
   });
 
   client.on('newchatlist', (message) => {
-    client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatid:message.chatId,picture : message.mypicture});
-    client.emit('chatlist'+message.myusername,{username:message.otherusername,name:message.othername,chatid:message.chatId,picture : message.otherpicture});
+    client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatId:message.chatId,picture : message.mypicture,description : message.mydescription});
+    client.emit('chatlist'+message.myusername,{username:message.otherusername,name:message.othername,chatId:message.chatId,picture : message.otherpicture,description : message.otherdescription});
   });
 
   client.on('editprofile', (message) => {
-    console.log(message);
     client.broadcast.emit('edit'+message.username,{message});
+  });
+
+  client.on('newfriend', (message) => {
+    client.emit('newfriend'+message.myUsername,message);
+  });
+
+  client.on('blockfriend', (message) => {
+    client.emit('blockfriend'+message.myUsername,message);
+  });
+
+  client.on('blockchat', (message) => {
+    client.emit('blockchat'+message,message);
+  });
+
+  client.on('readchat', (message) => {
+    client.broadcast.emit('readchat'+message,message);
   });
 
   client.on('closechatroom', (message) => {
     client.emit('closechatroom'+message,message);
   });
+
+  client.on('changechatroom', (message) => {
+    client.emit('changechatroom');
+  });
+
   client.on('openchatroom', (message) => {
     client.emit('openchatroom'+message,message);
   });

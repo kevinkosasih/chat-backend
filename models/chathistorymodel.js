@@ -11,7 +11,11 @@ const ChatHistory  = mongoose.Schema({
     name : {type : String, require : true, default:''}
   },
   timeStamp:{ type : Date , require : true , default : ''},
-  attachment : {type : String},
+  date : {type : String, require : true, default : ''},
+  attachment : {
+    name : {type : String},
+    type : {type : String}
+  },
   reciever:[{
     username:{type:String, require:true, default:''},
     read:{type:Boolean , require:true, default:false}

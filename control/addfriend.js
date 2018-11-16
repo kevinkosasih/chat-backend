@@ -11,6 +11,7 @@ module.exports.addFriends = (req,res) =>{
   const {
     friendlist,
   } = body;
+  console.log("friend: ",friendlist);
   const {cookie} = headers
   if(!cookie){
     return res.send({

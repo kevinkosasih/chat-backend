@@ -75,7 +75,8 @@ module.exports.read = (req,res) => {
           }
         ).exec()
         return res.send({
-          success:true
+          success:true,
+          log : chatlog
         })
       })
     })
