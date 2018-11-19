@@ -49,6 +49,7 @@ const request = require('./control/addblock')
 const checkrequest = require('./control/checkrequest')
 const search = require('./control/searchfriend')
 const notification = require('./control/notification')
+const deleteAccount = require('./control/deleteAccount')
 
 //routing API
 app.get('/getdata',loginAccount.dataToken)
@@ -67,6 +68,7 @@ app.put('/addchatroom',newChatRoom.newchatroom)
 app.put('/changepassword',changePassword.changePassword)
 app.put('/editprofile',editprofile.editprofile)
 app.put('/readNotif',notification.read)
+app.delete('/deleteAccount',deleteAccount.deleteAccount)
 
 //port API (can be change)
 const port = 3000;
@@ -85,6 +87,7 @@ io.on('connection', (client) => {
   });
 
   client.on('editprofile', (message) => {
+    console.log(message);
     client.broadcast.emit('edit'+message.username,{message});
   });
 

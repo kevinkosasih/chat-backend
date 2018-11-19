@@ -127,6 +127,12 @@ module.exports.dataToken = (req,res) =>{
             message: 'Error: Server error'
           });
         }
+        if(account.length ==  0 ){
+          res.clearCookie("Token")
+          return res.send({
+            success:false
+          })
+        }
         const data  = JSON.stringify({
           token:JSON.parse(decrypted).token,
           username:JSON.parse(decrypted).username

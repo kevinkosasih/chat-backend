@@ -8,7 +8,7 @@ const AccountModel = mongoose.Schema({
   name:{type:String,require:true,default:''},
   description:{type:String,default:"Hello there, I'm using tweey"},
   registerDate:{type:Date,require:true,default:Date.now()},
-  profilePicture : {type : String, default :'2018-09-18T09-56-58.769Z-boy.png'},
+  profilePicture : {type : String, default :'DefaultPicture.png'},
   friends:[{
     username:{type:String},
     name:{type:String},
