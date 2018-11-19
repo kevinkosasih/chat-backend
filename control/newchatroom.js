@@ -11,6 +11,7 @@ module.exports.newchatroom = (req,res) =>{
       chatid,
       user
   } = body;
+
   const {cookie} = headers
   if(!cookie){
     return res.send({
@@ -78,8 +79,6 @@ module.exports.newchatroom = (req,res) =>{
             for(var block in account[akun].blacklist){
               if(account[akun].blacklist[block].username == JSON.parse(decrypted).username){
                 blocked = true
-                console.log("akun: ",akun);
-                console.log("account: ",account);
                 Account.findOneAndUpdate({
                   _id : accountid
                 },{
@@ -88,7 +87,9 @@ module.exports.newchatroom = (req,res) =>{
                       chatId:chatid,
                       username:account[akun].username,
                       name:account[akun].name,
-                      picture : account[akun].profilePicture
+                      picture : account[akun].profilePicture,
+                      description : account[akun].description,
+                      createdDate : new Date()
                     }
                   }
                 },{new: true},(err) =>{
@@ -98,6 +99,7 @@ module.exports.newchatroom = (req,res) =>{
                       message:'Error: Server error'
                     })
                   }
+
                   return res.send({
                     success:true,
                     message:"block"
@@ -110,14 +112,18 @@ module.exports.newchatroom = (req,res) =>{
           }
         }
         if(!blocked){
-          for(var index in account[0].chatList){
-            if(account[0].chatList[index].username == user){
-              return res.send({
-                success:true,
-                chatId : account[0].chatList[index].chatId
-              })
-            }
-          }
+          // for(var akun in account){
+          //   if(account[akun].chatList.length != 0){
+          //     for(var index in account[akun].chatList){
+          //       if(account[akun].chatList[index].username == user){
+          //         return res.send({
+          //           success:true,
+          //           chatId : account[akun].chatList[index].chatId
+          //         })
+          //       }
+          //     }
+          //   }
+          // }
           Account.findOneAndUpdate({
             _id:account[0]._id
           },{
@@ -126,7 +132,9 @@ module.exports.newchatroom = (req,res) =>{
                 chatId:chatid,
                 username:account[1].username,
                 name:account[1].name,
-                picture : account[1].profilePicture
+                picture : account[1].profilePicture,
+                description : account[1].description,
+                createdDate : new Date()
               }
             }
           },{new: true},(err)=>{
@@ -144,7 +152,9 @@ module.exports.newchatroom = (req,res) =>{
                       chatId:chatid,
                       username:account[0].username,
                       name:account[0].name,
-                      picture : account[0].profilePicture
+                      picture : account[0].profilePicture,
+                      description : account[0].description,
+                      createdDate : new Date()
                     }
                   }
                 },{new: true},(err)=>{
@@ -154,9 +164,11 @@ module.exports.newchatroom = (req,res) =>{
                         message:'Error: Server Error'
                       })
                     }
+
                     return res.send({
                       success:true,
-                      chatId : chatid
+                      chatId : chatid,
+                      message: "Terbuat"
                     })
                 })
           })

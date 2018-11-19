@@ -58,24 +58,41 @@ module.exports.getchat = (req,res) => {
         if(chatlog.length == 0){
           return res.send({
             success : false,
+            chatId : token
           })
         }
         const chatHistory = new ChatHistory();
         let chatlist = []
         for(var index in chatlog){
           let chat = chatHistory.decrypt(chatlog[index].message,'asd');
-          console.log(chatlog);
-          chatlist = chatlist.concat({
-            sender: chatlog[index].sender,
-            message : chat,
-            chatId : chatlog[index].chatId,
-            receiver : chatlog[index].receiver,
-            time : chatlog[index].timestamp.time
-          })
+          if(chatlog[index].attachment.name){
+            chatlist = chatlist.concat({
+              sender: chatlog[index].sender,
+              message : chat,
+              chatId : chatlog[index].chatId,
+              receiver : chatlog[index].receiver,
+              time : chatlog[index].timeStamp,
+              date : chatlog[index].date,
+              receiver : chatlog[index].reciever,
+              attachment : chatlog[index].attachment
+            })
+          }
+          else{
+            chatlist = chatlist.concat({
+              sender: chatlog[index].sender,
+              message : chat,
+              chatId : chatlog[index].chatId,
+              receiver : chatlog[index].receiver,
+              time : chatlog[index].timeStamp,
+              date : chatlog[index].date,
+              receiver : chatlog[index].reciever
+            })
+          }
         }
         return res.send({
           success : true,
-          message : chatlist
+          message : chatlist,
+          chatId : token
         })
       })
     })

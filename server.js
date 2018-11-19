@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -9,38 +8,14 @@ const helmet = require('helmet');
 const app = express();
 const io = require('socket.io')();
 const cookieParser = require('cookie-parser');
-const multer = require('multer');
 const fs = require('file-system');
-
-const storageProfilePhoto = multer.diskStorage({
-
-  destination: function (req, file, cb) {
-    cb(null, './uploads/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, new Date().toISOString().replace(/:/g,'-') + '-' + file.originalname)
-  }
-})
-
-const uploadImage = multer({storage : storageProfilePhoto, limits: {fileSize: 1000000, files:1}}).single('Image')
-
-const storageAttachment = multer.diskStorage({
-
-  destination: function (req, file, cb) {
-    cb(null, './attachment/')
-  },
-  filename: function (req, file, cb) {
-    cb(null, new Date().toISOString().replace(/:/g,'-') + '-' + file.originalname)
-  }
-})
-
-const attachPhoto = multer({storage : storageAttachment, limits: {fileSize: 1000000, files:1}}).single('attachment')
 
 app.use(morgan('common'))
 app.use (helmet())
 //middleware using cors and bodyParser
 app.use(cors());
 app.use(express.static('./uploads'))
+app.use(express.static('./attachment'))
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(cookieParser());
@@ -73,6 +48,8 @@ const editprofile = require('./control/editprofile')
 const request = require('./control/addblock')
 const checkrequest = require('./control/checkrequest')
 const search = require('./control/searchfriend')
+const notification = require('./control/notification')
+const deleteAccount = require('./control/deleteAccount')
 
 //routing API
 app.get('/getdata',loginAccount.dataToken)
@@ -82,31 +59,64 @@ app.post('/getchat',getChat.getchat)
 app.post('/login',loginAccount.login)
 app.post('/regisnew',regisAccount.newRegis)
 app.post('/search',search.search)
-app.post('/chat',attachPhoto,chathitory.savechat)
+app.post('/chat',chathitory.savechat)
 app.post('/check',checkrequest.cekRequest)
 app.put('/add',request.add)
 app.put('/block',request.block)
 app.put('/Friends', addFriends.addFriends)
 app.put('/addchatroom',newChatRoom.newchatroom)
 app.put('/changepassword',changePassword.changePassword)
-app.put('/editprofile',uploadImage,editprofile.editprofile)
+app.put('/editprofile',editprofile.editprofile)
+app.put('/readNotif',notification.read)
+app.delete('/deleteAccount',deleteAccount.deleteAccount)
+
 //port API (can be change)
 const port = 3000;
 //openconnection for socket.io
 io.on('connection', (client) => {
   console.log("connected");
   client.on('sendChat', (message) => {
+    console.log(message);
     client.broadcast.emit(message.chatId,{message});
     client.emit(message.chatId,{message});
   });
 
   client.on('newchatlist', (message) => {
-    client.broadcast.emit('chatlist'+message.reciever,{message,send:1});
-    client.emit('chatlist'+message.sender,{message,send:0});
+    client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatId:message.chatId,picture : message.mypicture,description : message.mydescription});
+    client.emit('chatlist'+message.myusername,{username:message.otherusername,name:message.othername,chatId:message.chatId,picture : message.otherpicture,description : message.otherdescription});
+  });
+
+  client.on('editprofile', (message) => {
+    console.log(message);
+    client.broadcast.emit('edit'+message.username,{message});
+  });
+
+  client.on('newfriend', (message) => {
+    client.emit('newfriend'+message.myUsername,message);
+  });
+
+  client.on('blockfriend', (message) => {
+    client.emit('blockfriend'+message.myUsername,message);
+  });
+
+  client.on('blockchat', (message) => {
+    client.emit('blockchat'+message,message);
+  });
+
+  client.on('readchat', (message) => {
+    client.broadcast.emit('readchat'+message,message);
   });
 
   client.on('closechatroom', (message) => {
-    client.emit('chatroom'+message,message);
+    client.emit('closechatroom'+message,message);
+  });
+
+  client.on('changechatroom', (message) => {
+    client.emit('changechatroom');
+  });
+
+  client.on('openchatroom', (message) => {
+    client.emit('openchatroom'+message,message);
   });
 });
 // port for socket.io (can be change || cannot same with port app)

@@ -16,13 +16,13 @@ module.exports.login = (req,res) => {
   if (!username) {
       return res.send({
         success: false,
-        message: 'Error: username cannot be blank.'
+        message: 'Username cannot be blank.'
       });
     }
   if (!password) {
       return res.send({
         success: false,
-        message: 'Error: Password cannot be blank.'
+        message: 'Password cannot be blank.'
       });
   }
 
@@ -38,7 +38,7 @@ module.exports.login = (req,res) => {
     if(currentAccount.length != 1){
       return res.send({
         success: false,
-        message: 'Error: Username or password is wrong.'
+        message: 'Username or password is wrong.'
       });
     }
 
@@ -47,7 +47,7 @@ module.exports.login = (req,res) => {
     if(!user.validPassword(password)){
       return res.send({
         success: false,
-        message: 'Error: Username or password is wrong.'
+        message: 'Username or password is wrong.'
       });
     }
 
@@ -107,7 +107,6 @@ module.exports.dataToken = (req,res) =>{
       isDeleted:false
     },(err,data) =>{
       if (err) {
-        console.log(err);
         return res.send({
           success: false,
           message: 'Error: Server error'
@@ -123,11 +122,16 @@ module.exports.dataToken = (req,res) =>{
         _id:data[0].accountid
       },{password:0,_id:0},(err,account)=>{
         if (err) {
-          console.log(err);
           return res.send({
             success: false,
             message: 'Error: Server error'
           });
+        }
+        if(account.length ==  0 ){
+          res.clearCookie("Token")
+          return res.send({
+            success:false
+          })
         }
         const data  = JSON.stringify({
           token:JSON.parse(decrypted).token,
@@ -140,9 +144,10 @@ module.exports.dataToken = (req,res) =>{
 
         const expDate = new Date(Date.now()+(1000*60*60*24))
         res.cookie('Token',encryptBtoa,{expires:expDate,httpOnly: true})
+        const myaccount = account[0]
         return res.send({
           success:true,
-          akun:account[0]
+          akun:myaccount
         })
       })
     })
