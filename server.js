@@ -1,9 +1,5 @@
-<<<<<<< HEAD
  const express = require('express');
 const path = require('path');
-=======
-const express = require('express');
->>>>>>> 0a952361fa24a90d44ab5f05347d07b61f3c8cc3
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
