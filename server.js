@@ -50,6 +50,7 @@ const checkrequest = require('./control/checkrequest')
 const search = require('./control/searchfriend')
 const notification = require('./control/notification')
 const deleteAccount = require('./control/deleteAccount')
+const unsendMessage = require('./control/unsendMessage')
 
 //routing API
 app.get('/getdata',loginAccount.dataToken)
@@ -69,6 +70,7 @@ app.put('/changepassword',changePassword.changePassword)
 app.put('/editprofile',editprofile.editprofile)
 app.put('/readNotif',notification.read)
 app.delete('/deleteAccount',deleteAccount.deleteAccount)
+app.delete('/unsendMessage',unsendMessage.unsendMessage)
 
 //port API (can be change)
 const port = 3000;
@@ -87,7 +89,6 @@ io.on('connection', (client) => {
   });
 
   client.on('editprofile', (message) => {
-    console.log(message);
     client.broadcast.emit('edit'+message.username,{message});
   });
 
@@ -113,6 +114,19 @@ io.on('connection', (client) => {
 
   client.on('changechatroom', (message) => {
     client.emit('changechatroom');
+  });
+
+  client.on('scrollMyChatroom', (message) => {
+    client.emit('scrollMyChatroom');
+  });
+
+  client.on('scrollOtherChatroom', (message) => {
+    client.broadcast.emit('scrollOtherChatroom');
+  });
+
+  client.on('unsendMessage', (message) => {
+    client.broadcast.emit('unsendMessage'+message.chatId,message.timeStamp);
+    client.emit('unsendMessage'+message.chatId,message.timeStamp);
   });
 
   client.on('openchatroom', (message) => {
