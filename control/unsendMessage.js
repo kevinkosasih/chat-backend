@@ -1,25 +1,21 @@
 const Account = require('../models/accountmodel');
 const AccountSession = require('../models/accountsessionmodel');
-const crypto = require('crypto')
-const algorithm = 'aes-256-ctr'
-const KeyCookies = "setCookiesTokenChatApp"
-const atob = require('atob')
+const ChatHistory = require('../models/chathistorymodel');
+const crypto = require('crypto');
+const algorithm = 'aes-256-ctr';
+const KeyCookies = "setCookiesTokenChatApp";
+const atob = require('atob');
 
-module.exports.cekRequest = (req,res) =>{
-  const {body,headers} = req;
-  const {
-    username
-  } = body;
+module.exports.unsendMessage = (req,res) =>{
+  const {headers,body,file} = req
   const {cookie} = headers
+  const {
+    chatId,
+    timeStamp
+  } = body
   if(!cookie){
     return res.send({
       success:false
-    })
-  }
-  if(!username){
-    return res.send({
-      success:false,
-      message:'Error: Cannot be blank',
     })
   }
   let getcookie  = cookie.split(";")
@@ -33,6 +29,7 @@ module.exports.cekRequest = (req,res) =>{
       getToken =[]
     }
   }
+
   if(getToken[0]){
     let decryptAtob = atob(decodeURIComponent(getToken[1]))
     var decipher = crypto.createDecipher(algorithm,KeyCookies)
@@ -40,9 +37,8 @@ module.exports.cekRequest = (req,res) =>{
     decrypted += decipher.final('utf8');
 
     AccountSession.find({
-      _id: JSON.parse(decrypted).token,
-      isDeleted:false
-    },(err,currentToken)=>{
+      _id:JSON.parse(decrypted).token
+    },(err,currentToken) => {
       if(err){
         return res.send({
           success:false,
@@ -59,24 +55,30 @@ module.exports.cekRequest = (req,res) =>{
 
       const {accountid} = currentToken[0]
       Account.find({
-        $and:[{_id:accountid},{'friendrequest.username':username}]
-      },(err,account)=>{
+        _id : accountid
+      },(err, currentAccount)=>{
+        const account = currentAccount[0];
         if(err){
           return res.send({
             success:false,
             message:'Error: Server error'
           })
         }
-        if(account.length != 0){
+        const time = new Date(timeStamp)
+        ChatHistory.deleteOne({
+          chatId : chatId,
+          timeStamp:time
+        },(err,message)=>{
+          if(err){
+            return res.send({
+              success:false,
+              message:'message not found'
+            })
+          }
           return res.send({
-            success : false,
-            requested : true,
-            message : 'not yet added as friends'
+            success : true,
+            message: message
           })
-        }
-        return res.send({
-          success : true,
-          requested : false
         })
       })
     })
