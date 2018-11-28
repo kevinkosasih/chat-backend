@@ -9,6 +9,7 @@ const AccountModel = mongoose.Schema({
   description:{type:String,default:"Hello there, I'm using tweey"},
   registerDate:{type:Date,require:true,default:Date.now()},
   profilePicture : {type : String, default :'DefaultPicture.png'},
+  isAdmin:{type: Boolean, default:false},
   friends:[{
     username:{type:String},
     name:{type:String},
@@ -22,12 +23,6 @@ const AccountModel = mongoose.Schema({
     picture : {type : String},
     description : {type : String},
     createdDate : {type : Date}
-  }],
-  blacklist:[{
-    username:{type:String},
-    name:{type:String},
-    picture : {type : String},
-    description : {type : String}
   }],
   friendrequest:[{
     username:{type:String},

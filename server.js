@@ -1,4 +1,4 @@
- const express = require('express');
+  const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -63,7 +63,6 @@ app.post('/search',search.search)
 app.post('/chat',chathitory.savechat)
 app.post('/check',checkrequest.cekRequest)
 app.put('/add',request.add)
-app.put('/block',request.block)
 app.put('/Friends', addFriends.addFriends)
 app.put('/addchatroom',newChatRoom.newchatroom)
 app.put('/changepassword',changePassword.changePassword)

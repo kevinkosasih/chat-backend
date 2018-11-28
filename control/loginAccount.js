@@ -141,7 +141,6 @@ module.exports.dataToken = (req,res) =>{
         var crypted = cipher.update(data,'utf8','hex')
         crypted += cipher.final('hex');
         const encryptBtoa = btoa(crypted)
-
         const expDate = new Date(Date.now()+(1000*60*60*24))
         res.cookie('Token',encryptBtoa,{expires:expDate,httpOnly: true})
         const myaccount = account[0]

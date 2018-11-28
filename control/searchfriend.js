@@ -81,18 +81,6 @@ module.exports.search = (req,res) => {
             message : "You can't add yourself as friend"
           })
         }
-        for(var blocked in checkAccount[0].blacklist){
-          if(checkAccount[0].blacklist[blocked] != null && checkAccount[0].blacklist[blocked].username == username){
-            return res.send({
-              success:true,
-              username:username,
-              name:checkAccount[0].blacklist[blocked].name,
-              picture : checkAccount[0].blacklist[blocked].picture,
-              description : checkAccount[0].blacklist[blocked].description,
-              message:'You blocked this user'
-            })
-          }
-        }
         for(var request in checkAccount[0].friendrequest){
           if(checkAccount[0].friendrequest[request] != null && checkAccount[0].friendrequest[request].username == username){
             return res.send({
