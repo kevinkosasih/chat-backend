@@ -49,7 +49,6 @@ const request = require('./control/addblock')
 const checkrequest = require('./control/checkrequest')
 const search = require('./control/searchfriend')
 const notification = require('./control/notification')
-const deleteAccount = require('./control/deleteAccount')
 const unsendMessage = require('./control/unsendMessage')
 
 //routing API
@@ -63,13 +62,11 @@ app.post('/search',search.search)
 app.post('/chat',chathitory.savechat)
 app.post('/check',checkrequest.cekRequest)
 app.put('/add',request.add)
-app.put('/block',request.block)
 app.put('/Friends', addFriends.addFriends)
 app.put('/addchatroom',newChatRoom.newchatroom)
 app.put('/changepassword',changePassword.changePassword)
 app.put('/editprofile',editprofile.editprofile)
 app.put('/readNotif',notification.read)
-app.delete('/deleteAccount',deleteAccount.deleteAccount)
 app.delete('/unsendMessage',unsendMessage.unsendMessage)
 
 //port API (can be change)
@@ -84,6 +81,7 @@ io.on('connection', (client) => {
   });
 
   client.on('newchatlist', (message) => {
+    console.log(message);
     client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatId:message.chatId,picture : message.mypicture,description : message.mydescription});
     client.emit('chatlist'+message.myusername,{username:message.otherusername,name:message.othername,chatId:message.chatId,picture : message.otherpicture,description : message.otherdescription});
   });

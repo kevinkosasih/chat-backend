@@ -23,18 +23,13 @@ const AccountModel = mongoose.Schema({
     description : {type : String},
     createdDate : {type : Date}
   }],
-  blacklist:[{
-    username:{type:String},
-    name:{type:String},
-    picture : {type : String},
-    description : {type : String}
-  }],
   friendrequest:[{
     username:{type:String},
     name:{type:String},
     picture : {type : String},
     description : {type : String}
-  }]
+  }],
+  isAdmin : {type:Boolean , require:true, default:false}
 })
 AccountModel.methods.generateHash = function(password) {
   return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
