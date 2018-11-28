@@ -8,6 +8,9 @@ const atob = require('atob');
 module.exports.deleteAccount = (req,res) =>{
   const {headers,body,file} = req
   const {cookie} = headers
+  const {
+    deletedUsername
+  }  = body;
 
   if(!cookie){
     return res.send({
@@ -61,19 +64,20 @@ module.exports.deleteAccount = (req,res) =>{
             message:'Error: Server error'
           })
         }
-        Account.update({'friends.username':account.username},
+        if(account.username != "ADMIN"){
+          return res.send({
+            success:false,
+          })
+        }
+        Account.update({'friends.username':deletedUsername},
         {
-          $pull:{friends:{username:account.username}}
+          $pull:{friends:{username:deletedUsername}}
         }).exec()
-        Account.update({'friendrequest.username':account.username},
+        Account.update({'friendrequest.username':deletedUsername},
         {
-          $pull:{friendrequest:{username:account.username}}
+          $pull:{friendrequest:{username:deletedUsername}}
         }).exec()
-        Account.update({'blacklist.username':account.username},
-        {
-          $pull:{blacklist:{username:account.username}}
-        }).exec()
-        Account.update({'chatList.username':account.username},
+        Account.update({'chatList.username':deletedUsername},
         {$set:
           {"chatList.$[elem].username":"",
           "chatList.$[elem].name": " ",
@@ -81,28 +85,11 @@ module.exports.deleteAccount = (req,res) =>{
           "chatList.$[elem].description": "Hello there, I'm using tweey"}
         },
         {
-          arrayFilters : [{'elem.username' : account.username}],
+          arrayFilters : [{'elem.username' : deletedUsername}],
           multi : true
         },(err,user)=>{
           console.log(user);
         })
-        AccountSession.findOneAndUpdate({
-          _id:JSON.parse(decrypted).token,
-          isDeleted:false
-        }, {
-            $set: {
-              isDeleted:true,
-              deleted:Date.now()
-            }
-          }, null,(err,accountToken) => {
-            if (err) {
-              console.log(err);
-              return res.send({
-                success: false,
-                message: 'Error: Server error'
-              });
-            }
-          })
         Account.deleteOne({
           _id:accountid
         }).exec()
@@ -111,7 +98,7 @@ module.exports.deleteAccount = (req,res) =>{
           success:true,
           name :"",
           picture : "DefaultPicture.png",
-          username:account.username,
+          username:deletedUsername,
           description : "Hello there, I'm using tweey"
         })
       })

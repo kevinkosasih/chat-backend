@@ -29,7 +29,7 @@ module.exports.newRegis= (req,res) => {
         message: 'Error: name cannot be blank.'
       });
     }
-  if (!email) {
+    if (!email) {
       return res.send({
         success: false,
         message: 'Error: email cannot be blank.'
@@ -78,17 +78,49 @@ module.exports.newRegis= (req,res) => {
     newAccount.email = email
     newAccount.name = name
     newAccount.registerDate = Date.now();
-    newAccount.save((err, user) => {
+    newAccount.save((err, newUser) => {
       if (err) {
         return res.send({
           success: false,
           message: 'Error: Server error'
         });
       }
-      return res.send({
-        success: true,
-        message: 'Signed up'
-      });
+      Account.findOneAndUpdate({
+        username:"ADMIN"
+      },{
+        $push:{
+          friends:[{
+            username:newUser.username,
+            name:newUser.name
+          }]
+        }
+      },{new:true},(err,adminAccount) =>{
+        if(err){
+          return res.send({
+            success:false
+          })
+        }
+        Account.findOneAndUpdate({
+          username:newUser.username
+        },{
+          $push:{
+            friends:[{
+              username:adminAccount.username,
+              name:adminAccount.name
+            }]
+          }
+        },{new:true},(err) =>{
+          if(err){
+            return res.send({
+              success:false
+            })
+          }
+          return res.send({
+            success: true,
+            message: 'Signed up'
+          });
+        })
+      })
     });
   });
 };

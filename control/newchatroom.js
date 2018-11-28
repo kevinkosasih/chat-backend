@@ -112,18 +112,6 @@ module.exports.newchatroom = (req,res) =>{
           }
         }
         if(!blocked){
-          // for(var akun in account){
-          //   if(account[akun].chatList.length != 0){
-          //     for(var index in account[akun].chatList){
-          //       if(account[akun].chatList[index].username == user){
-          //         return res.send({
-          //           success:true,
-          //           chatId : account[akun].chatList[index].chatId
-          //         })
-          //       }
-          //     }
-          //   }
-          // }
           Account.findOneAndUpdate({
             _id:account[0]._id
           },{
