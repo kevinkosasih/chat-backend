@@ -22,13 +22,14 @@ const storageProfilePhoto = multer.diskStorage({
 
 const uploadImage = multer({
   storage : storageProfilePhoto,
-  limits: {fileSize: 1000000, files:1},
+  limits: {files:1},
   fileFilter : function(req,file,cb){
     checkFileType(file,cb);
   }
 }).single('Image')
 
 function checkFileType(file,cb){
+  console.log(file);
   //allowed file
   const fileTypes = /jpeg|jpg|png|gif/;
   //check ext
@@ -37,8 +38,9 @@ function checkFileType(file,cb){
   const mimetype = fileTypes.test(file.mimetype);
   if(mimetype && extname){
     return cb(null,true);
-  } else {
-    cb("Error : Images Only!");
+  }
+  else {
+    cb("Images Only!");
   }
 }
 
@@ -50,7 +52,7 @@ module.exports.editprofile = (req,res) =>{
     if(err){
       return res.send({
         success : false,
-        message : "Images Only !"
+        message : err
       })
     }
     if(!cookie){
@@ -105,7 +107,13 @@ module.exports.editprofile = (req,res) =>{
               else if (account) {
                 const akun = account[0];//account cccccc
                 if(file){
-                  const {filename} = file
+                  const {filename,size} = file
+                  if(size > 1000000){
+                    return res.send({
+                      success : false,
+                      message : "You can only upload 1 MB File"
+                    })
+                  }
                   Account.update({_id: akun._id},
                     {$set:
                       {name : name,
@@ -147,7 +155,7 @@ module.exports.editprofile = (req,res) =>{
                   ).exec()
                     res.send({
                       success : true,
-                      photo:filename
+                      photo: filename
                     })
                   }
                 else{

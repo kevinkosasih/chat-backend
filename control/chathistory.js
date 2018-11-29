@@ -20,7 +20,7 @@ const storageAttachment = multer.diskStorage({
 
 const attachPhoto = multer({
   storage : storageAttachment,
-  limits: {fileSize: 1000000, files:1},
+  limits: {files:1},
   fileFilter : function(req,file,cb){
     checkFileType(file,cb);
   }
@@ -30,7 +30,6 @@ const attachPhoto = multer({
 function checkFileType(file,cb){
   //allowed file
   const fileTypes = /jpeg|jpg|png|gif/;
-  console.log("ini file: ",file);
   //check ext
   const extname = fileTypes.test(path.extname(new Date().toISOString().replace(/:/g,'-') + '-' + file.originalname).toLowerCase());
   //check mime
@@ -40,8 +39,9 @@ function checkFileType(file,cb){
   }
   else if (file.mimetype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"){
     return cb(null,true);
-  } else {
-    cb("ERROR");
+  }
+  else {
+    return cb("You can only upload .png/.jpeg/.jpg/.gif/.docx file");
   }
 }
 
@@ -61,7 +61,7 @@ module.exports.savechat = (req,res) =>{
     if(err){
       return res.send({
         success : false,
-        message : "You can only upload .png/.jpeg/.jpg/.gif/.docx file"
+        message : err
       })
     }
     if(!cookie){
@@ -106,7 +106,13 @@ module.exports.savechat = (req,res) =>{
 
         const newChatHistory = new ChatHistory();
         if(file){
-          const {filename,mimetype} = file;
+          const {filename,mimetype,size} = file;
+          if(size > 5000000){
+            return res.send({
+              success : false,
+              message : "You can only upload 5 MB File"
+            })
+          }
           newChatHistory.chatId = chatId;
           newChatHistory.message = newChatHistory.encrypt(message,"asd");
           newChatHistory.sender.username = senderUsername;

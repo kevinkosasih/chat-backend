@@ -91,7 +91,9 @@ module.exports.newRegis= (req,res) => {
         $push:{
           friends:[{
             username:newUser.username,
-            name:newUser.name
+            name:newUser.name,
+            picture : newUser.profilePicture,
+            description : newUser.description
           }]
         }
       },{new:true},(err,adminAccount) =>{
@@ -106,7 +108,9 @@ module.exports.newRegis= (req,res) => {
           $push:{
             friends:[{
               username:adminAccount.username,
-              name:adminAccount.name
+              name:adminAccount.name,
+              picture : adminAccount.profilePicture,
+              description : adminAccount.description
             }]
           }
         },{new:true},(err) =>{
@@ -117,7 +121,14 @@ module.exports.newRegis= (req,res) => {
           }
           return res.send({
             success: true,
-            message: 'Signed up'
+            message: 'Signed up',
+            newUser : {
+              username:newUser.username,
+              name:newUser.name,
+              picture : newUser.profilePicture,
+              description : newUser.description,
+              myUsername : adminAccount.username
+            }
           });
         })
       })

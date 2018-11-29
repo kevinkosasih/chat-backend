@@ -11,7 +11,7 @@ module.exports.deleteAccount = (req,res) =>{
   const {
     deletedUsername
   }  = body;
-
+  console.log(body);
   if(!cookie){
     return res.send({
       success:false
@@ -91,9 +91,8 @@ module.exports.deleteAccount = (req,res) =>{
           console.log(user);
         })
         Account.deleteOne({
-          _id:accountid
+          username:deletedUsername
         }).exec()
-        res.clearCookie("Token")
         return res.send({
           success:true,
           name :"",
