@@ -77,7 +77,6 @@ const port = 3000;
 //openconnection for socket.io
 io.on('connection', (client) => {
   client.on('sendChat', (message) => {
-    console.log(message);
     client.broadcast.emit(message.chatId,{message});
     client.emit(message.chatId,{message});
   });
@@ -113,7 +112,6 @@ io.on('connection', (client) => {
   });
 
   client.on('scrollMyChatroom', (message) => {
-    console.log("masuk");
     client.emit('scrollMyChatroom');
   });
 
@@ -128,6 +126,11 @@ io.on('connection', (client) => {
 
   client.on('openchatroom', (message) => {
     client.emit('openchatroom'+message,message);
+  });
+
+  client.on('openRoomforNotification', (message) => {
+    console.log(message);
+    client.broadcast.emit('openRoomforNotification'+message,message);
   });
 });
 // port for socket.io (can be change || cannot same with port app)
