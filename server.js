@@ -43,35 +43,23 @@ const verify = require('./control/verify')
 const chathitory = require('./control/chathistory')
 const newChatRoom = require('./control/newchatroom')
 const getChat = require('./control/getChat')
-const addFriends = require('./control/addfriend')
 const changePassword = require ('./control/changePassword')
-const editprofile = require('./control/editprofile')
-const request = require('./control/addblock')
-const checkrequest = require('./control/checkrequest')
-const search = require('./control/searchfriend')
 const notification = require('./control/notification')
-const deleteAccount = require('./control/deleteAccount')
 
 //routing API
+app.get('/verify',verify.verify)
 app.get('/getdata',loginAccount.dataToken)
 app.get('/logout',logoutAccount.logout)
-app.get('/verify',verify.verify)
 app.post('/getchat',getChat.getchat)
 app.post('/login',loginAccount.login)
 app.post('/regisnew',regisAccount.newRegis)
-app.post('/search',search.search)
 app.post('/chat',chathitory.savechat)
-app.post('/check',checkrequest.cekRequest)
-app.put('/add',request.add)
-app.put('/Friends', addFriends.addFriends)
 app.put('/addchatroom',newChatRoom.newchatroom)
 app.put('/changepassword',changePassword.changePassword)
-app.put('/editprofile',editprofile.editprofile)
 app.put('/readNotif',notification.read)
-app.delete('/deleteAccount',deleteAccount.deleteAccount)
 
 //port API (can be change)s
-const port = 3001;
+const port = 3000;
 //openconnection for socket.io
 io.on('connection', (client) => {
   console.log("connected");
@@ -82,25 +70,8 @@ io.on('connection', (client) => {
   });
 
   client.on('newchatlist', (message) => {
-    client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatId:message.chatId,picture : message.mypicture,description : message.mydescription});
-    client.emit('chatlist'+message.myusername,{username:message.otherusername,name:message.othername,chatId:message.chatId,picture : message.otherpicture,description : message.otherdescription});
-  });
-
-  client.on('editprofile', (message) => {
-    console.log(message);
-    client.broadcast.emit('edit'+message.username,{message});
-  });
-
-  client.on('newfriend', (message) => {
-    client.emit('newfriend'+message.myUsername,message);
-  });
-
-  client.on('blockfriend', (message) => {
-    client.emit('blockfriend'+message.myUsername,message);
-  });
-
-  client.on('blockchat', (message) => {
-    client.emit('blockchat'+message,message);
+    client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatId:message.chatId});
+    client.emit('chatlist'+message.myusername,{username:message.otherusername,name:message.othername,chatId:message.chatId});
   });
 
   client.on('readchat', (message) => {
@@ -117,12 +88,6 @@ io.on('connection', (client) => {
 
   client.on('openchatroom', (message) => {
     client.emit('openchatroom'+message,message);
-  });
-
-  client.on('newchatlist', (message) => {
-    console.log(message);
-    client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatid:message.chatid});
-    client.emit('chatlist'+message.myusername,{username:message.otherusername,name:message.othername,chatid:message.chatid});
   });
 });
 // port for socket.io (can be change || cannot same with port app)

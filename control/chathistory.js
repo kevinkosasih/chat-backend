@@ -47,7 +47,7 @@ function checkFileType(file,cb){
 
 module.exports.savechat = (req,res) =>{
   attachPhoto(req,res,(err) =>{
-    const {body,headers,file} = req;
+    const {body,headers,file,rawHeaders} = req;
     const {
       chatId,
       message,
@@ -76,11 +76,21 @@ module.exports.savechat = (req,res) =>{
     let getToken = []
     for(var i=0;i<getcookie.length;i++){
       getToken = getcookie[i].split("=")
-      if(getToken[0] == "Token" || getToken[0] == " Token"){
-        break;
+      if(rawHeaders[1] == 'localhost:3001'){
+        if(getToken[0] == "TokenAdmin" || getToken[0] == " TokenAdmin"){
+          break;
+        }
+        else {
+          getToken = []
+        }
       }
-      else{
-        getToken =[]
+      else {
+        if(getToken[0] == "TokenUser" || getToken[0] == " TokenUser"){
+          break;
+        }
+        else {
+          getToken = []
+        }
       }
     }
     if(getToken[0]){

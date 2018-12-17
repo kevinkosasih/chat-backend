@@ -1,34 +1,20 @@
 const mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
+var crypto = require("crypto");
 
 const AccountModel = mongoose.Schema({
   username:{type:String,require:true,default:''},
   password:{type:String,require:true,default:''},
   email:{type:String,require:true,default:''},
   name:{type:String,require:true,default:''},
-  description:{type:String,default:"Hello there, I'm using tweey"},
+  chatID:{type:String,require:true,default:crypto.randomBytes(20).toString('hex')+Date.now()},
   registerDate:{type:Date,require:true,default:Date.now()},
-  profilePicture : {type : String, default :'DefaultPicture.png'},
   isAdmin:{type: Boolean, default:false},
-  friends:[{
-    username:{type:String},
-    name:{type:String},
-    picture : {type : String},
-    description : {type : String}
-  }],
   chatList:[{
     chatId:{type:String},
     username:{type:String},
     name:{type:String},
-    picture : {type : String},
-    description : {type : String},
     createdDate : {type : Date}
-  }],
-  friendrequest:[{
-    username:{type:String},
-    name:{type:String},
-    picture : {type : String},
-    description : {type : String}
   }]
 })
 AccountModel.methods.generateHash = function(password) {

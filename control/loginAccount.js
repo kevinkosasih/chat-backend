@@ -8,7 +8,7 @@
 
 
 module.exports.login = (req,res) => {
-  const { body,file } = req;
+  const { body,rawHeaders } = req;
   const {
     username,
     password
@@ -50,7 +50,12 @@ module.exports.login = (req,res) => {
         message: 'Username or password is wrong.'
       });
     }
-
+    if((rawHeaders[1] == 'localhost:3001' && !currentAccount[0].isAdmin) || (rawHeaders[1]=='localhost:3002' && currentAccount[0].isAdmin)){
+      return res.send({
+        success: false,
+        message: 'Username or password is wrong.'
+      });
+    }
     const session = new AccountSession();
     session.accountid = user._id;
     session.timestamp = Date.now()
@@ -68,17 +73,23 @@ module.exports.login = (req,res) => {
       crypted += cipher.final('hex');
       const encryptBtoa = btoa(crypted)
       const expDate = new Date(Date.now()+(1000*60*60*24))
-      res.cookie('Token',encryptBtoa,{expires:expDate,httpOnly: true})
+      if(rawHeaders[1] == 'localhost:3001' && currentAccount[0].isAdmin){
+        res.cookie('TokenAdmin',encryptBtoa,{expires:expDate,httpOnly: true})
+      }
+      else{
+        res.cookie('TokenUser',encryptBtoa,{expires:expDate,httpOnly: true})
+      }
       return res.send({
         success: true,
         message: 'Logged in',
+        isAdmin: currentAccount[0].isAdmin
       });
     })
   })
 }
 
 module.exports.dataToken = (req,res) =>{
-  const {headers} = req;
+  const {headers,rawHeaders} = req;
   const {cookie} = headers
   if(!cookie){
     return res.send({
@@ -89,11 +100,21 @@ module.exports.dataToken = (req,res) =>{
   let getToken = []
   for(var i=0;i<getcookie.length;i++){
     getToken = getcookie[i].split("=")
-    if(getToken[0] == "Token" || getToken[0] == " Token"){
-      break;
+    if(rawHeaders[1] == 'localhost:3001'){
+      if(getToken[0] == "TokenAdmin" || getToken[0] == " TokenAdmin"){
+        break;
+      }
+      else {
+        getToken = []
+      }
     }
-    else{
-      getToken =[]
+    else {
+      if(getToken[0] == "TokenUser" || getToken[0] == " TokenUser"){
+        break;
+      }
+      else {
+        getToken = []
+      }
     }
   }
   if(getToken[0]){
@@ -142,7 +163,12 @@ module.exports.dataToken = (req,res) =>{
         crypted += cipher.final('hex');
         const encryptBtoa = btoa(crypted)
         const expDate = new Date(Date.now()+(1000*60*60*24))
-        res.cookie('Token',encryptBtoa,{expires:expDate,httpOnly: true})
+        if(rawHeaders[1] == 'localhost:3001' && account[0].isAdmin){
+          res.cookie('TokenAdmin',encryptBtoa,{expires:expDate,httpOnly: true})
+        }
+        else{
+          res.cookie('TokenUser',encryptBtoa,{expires:expDate,httpOnly: true})
+        }
         const myaccount = account[0]
         return res.send({
           success:true,
