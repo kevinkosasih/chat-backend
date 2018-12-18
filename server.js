@@ -70,7 +70,7 @@ io.on('connection', (client) => {
   });
 
   client.on('newchatlist', (message) => {
-    client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatId:message.chatId});
+    client.broadcast.emit('chatlist'+message.otherusername,{username:message.myusername,name:message.myname,chatId:message.chatId,profilePicture : "DefaultPicture.png"});
     client.emit('chatlist'+message.myusername,{username:message.otherusername,name:message.othername,chatId:message.chatId});
   });
 

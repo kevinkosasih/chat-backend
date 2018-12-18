@@ -14,7 +14,8 @@ const AccountModel = mongoose.Schema({
     chatId:{type:String},
     username:{type:String},
     name:{type:String},
-    createdDate : {type : Date}
+    createdDate : {type : Date},
+    profilePicture :{type:String,default:'DefaultPicture.png'}
   }]
 })
 AccountModel.methods.generateHash = function(password) {

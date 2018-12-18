@@ -57,54 +57,109 @@ module.exports.getchat = (req,res) => {
           message: 'Error: '
         });
       }
-      ChatHistory.find({
-        chatId:token
-      },(err,chatlog) =>{
-        if(err){
+      if(rawHeaders[1] == "localhost:3001"){
+        ChatHistory.find({
+          chatId:token
+        },(err,chatlog) =>{
+          if(err){
+            return res.send({
+              success:false
+            })
+          }
+          if(chatlog.length == 0){
+            return res.send({
+              success : false,
+              chatId : token
+            })
+          }
+          const chatHistory = new ChatHistory();
+          let chatlist = []
+          for(var index in chatlog){
+            let chat = chatHistory.decrypt(chatlog[index].message,'asd');
+            if(chatlog[index].attachment.name){
+              chatlist = chatlist.concat({
+                sender: chatlog[index].sender,
+                message : chat,
+                chatId : chatlog[index].chatId,
+                receiver : chatlog[index].receiver,
+                time : chatlog[index].timeStamp,
+                date : chatlog[index].date,
+                receiver : chatlog[index].reciever,
+                attachment : chatlog[index].attachment
+              })
+            }
+            else{
+              chatlist = chatlist.concat({
+                sender: chatlog[index].sender,
+                message : chat,
+                chatId : chatlog[index].chatId,
+                receiver : chatlog[index].receiver,
+                time : chatlog[index].timeStamp,
+                date : chatlog[index].date,
+                receiver : chatlog[index].reciever
+              })
+            }
+          }
           return res.send({
-            success:false
-          })
-        }
-        if(chatlog.length == 0){
-          return res.send({
-            success : false,
+            success : true,
+            message : chatlist,
             chatId : token
           })
-        }
-        const chatHistory = new ChatHistory();
-        let chatlist = []
-        for(var index in chatlog){
-          let chat = chatHistory.decrypt(chatlog[index].message,'asd');
-          if(chatlog[index].attachment.name){
-            chatlist = chatlist.concat({
-              sender: chatlog[index].sender,
-              message : chat,
-              chatId : chatlog[index].chatId,
-              receiver : chatlog[index].receiver,
-              time : chatlog[index].timeStamp,
-              date : chatlog[index].date,
-              receiver : chatlog[index].reciever,
-              attachment : chatlog[index].attachment
-            })
-          }
-          else{
-            chatlist = chatlist.concat({
-              sender: chatlog[index].sender,
-              message : chat,
-              chatId : chatlog[index].chatId,
-              receiver : chatlog[index].receiver,
-              time : chatlog[index].timeStamp,
-              date : chatlog[index].date,
-              receiver : chatlog[index].reciever
-            })
-          }
-        }
-        return res.send({
-          success : true,
-          message : chatlist,
-          chatId : token
         })
-      })
+      } else {
+        var date = new Date();
+        var yesterday = date - 1000 * 60 * 60 * 24 * 3;
+        ChatHistory.find({
+          chatId:token,
+          timeStamp : {$gte :yesterday , $lt : date}
+        },(err,chatlog) =>{
+          if(err){
+            return res.send({
+              success:false
+            })
+          }
+          if(chatlog.length == 0){
+            return res.send({
+              success : false,
+              chatId : token
+            })
+          }
+          const chatHistory = new ChatHistory();
+          let chatlist = []
+          for(var index in chatlog){
+            let chat = chatHistory.decrypt(chatlog[index].message,'asd');
+            if(chatlog[index].attachment.name){
+              chatlist = chatlist.concat({
+                sender: chatlog[index].sender,
+                message : chat,
+                chatId : chatlog[index].chatId,
+                receiver : chatlog[index].receiver,
+                time : chatlog[index].timeStamp,
+                date : chatlog[index].date,
+                receiver : chatlog[index].reciever,
+                attachment : chatlog[index].attachment
+              })
+            }
+            else{
+              chatlist = chatlist.concat({
+                sender: chatlog[index].sender,
+                message : chat,
+                chatId : chatlog[index].chatId,
+                receiver : chatlog[index].receiver,
+                time : chatlog[index].timeStamp,
+                date : chatlog[index].date,
+                receiver : chatlog[index].reciever
+              })
+            }
+          }
+          return res.send({
+            success : true,
+            message : chatlist,
+            chatId : token
+          })
+        })
+      }
+
     })
   }
   else{
