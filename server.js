@@ -45,6 +45,7 @@ const newChatRoom = require('./control/newchatroom')
 const getChat = require('./control/getChat')
 const changePassword = require ('./control/changePassword')
 const notification = require('./control/notification')
+const unsendMessage = require('./control/unsendMessage')
 
 //routing API
 app.get('/verify',verify.verify)
@@ -57,6 +58,7 @@ app.post('/chat',chathitory.savechat)
 app.put('/addchatroom',newChatRoom.newchatroom)
 app.put('/changepassword',changePassword.changePassword)
 app.put('/readNotif',notification.read)
+app.delete('/unsendMessage',unsendMessage.unsendMessage)
 
 //port API (can be change)s
 const port = 3000;
@@ -76,6 +78,7 @@ io.on('connection', (client) => {
 
   client.on('readchat', (message) => {
     client.broadcast.emit('readchat'+message,message);
+    client.emit('readchat'+message,message);
   });
 
   client.on('closechatroom', (message) => {
@@ -88,6 +91,11 @@ io.on('connection', (client) => {
 
   client.on('openchatroom', (message) => {
     client.emit('openchatroom'+message,message);
+  });
+
+  client.on('unsendMessage', (message) => {
+    client.broadcast.emit('unsendMessage'+message.chatId,message.timeStamp);
+    client.emit('unsendMessage'+message.chatId,message.timeStamp);
   });
 });
 // port for socket.io (can be change || cannot same with port app)
