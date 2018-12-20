@@ -9,7 +9,7 @@ module.exports.read = (req,res) => {
   const{body,headers,rawHeaders} = req
   const {cookie} = headers
   const {token,username} = body
-  console.log(username);
+
   if(!cookie){
     return res.send({
       success:false
@@ -61,6 +61,7 @@ module.exports.read = (req,res) => {
       ChatHistory.find({
         chatId:token
       },(err,chatlog) =>{
+        console.log(username);
         if(err){
           return res.send({
             success:false

@@ -78,7 +78,6 @@ io.on('connection', (client) => {
 
   client.on('readchat', (message) => {
     client.broadcast.emit('readchat'+message,message);
-    client.emit('readchat'+message,message);
   });
 
   client.on('closechatroom', (message) => {
