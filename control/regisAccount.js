@@ -5,7 +5,7 @@ module.exports.newRegis= (req,res) => {
   const {
     username,
     password,
-    name
+    name,
   } = body;
   let {
     email
@@ -68,10 +68,7 @@ module.exports.newRegis= (req,res) => {
       }
     }
 
-    const newAccount = new Account({
-      friends:[],
-      chatList:[],
-    });
+    const newAccount = new Account();
 
     newAccount.username = username
     newAccount.password = newAccount.generateHash(password)
@@ -85,42 +82,10 @@ module.exports.newRegis= (req,res) => {
           message: 'Error: Server error'
         });
       }
-      Account.findOneAndUpdate({
-        username:"ADMIN"
-      },{
-        $push:{
-          friends:[{
-            username:newUser.username,
-            name:newUser.name
-          }]
-        }
-      },{new:true},(err,adminAccount) =>{
-        if(err){
-          return res.send({
-            success:false
-          })
-        }
-        Account.findOneAndUpdate({
-          username:newUser.username
-        },{
-          $push:{
-            friends:[{
-              username:adminAccount.username,
-              name:adminAccount.name
-            }]
-          }
-        },{new:true},(err) =>{
-          if(err){
-            return res.send({
-              success:false
-            })
-          }
-          return res.send({
-            success: true,
-            message: 'Signed up'
-          });
-        })
-      })
+      return res.send({
+        success: true,
+        message: 'Signed up'
+      });
     });
   });
 };

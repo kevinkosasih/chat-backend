@@ -6,14 +6,27 @@ const atob = require('atob')
 
 
 module.exports.logout = (req,res) => {
-  const {headers} = req;
+  const {headers,rawHeaders} = req;
   const {cookie} = headers
   let getcookie  = cookie.split(";")
   let getToken = []
   for(var i=0;i<getcookie.length;i++){
     getToken = getcookie[i].split("=")
-    if(getToken[0] == "Token"){
-      break;
+    if(rawHeaders[1] == 'localhost:3001'){
+      if(getToken[0] == "TokenAdmin" || getToken[0] == " TokenAdmin"){
+        break;
+      }
+      else {
+        getToken = []
+      }
+    }
+    else{
+      if(getToken[0] == "TokenUser" || getToken[0] == " TokenUser"){
+        break;
+      }
+      else {
+        getToken = []
+      }
     }
   }
   let decryptAtob = atob(decodeURIComponent(getToken[1]))

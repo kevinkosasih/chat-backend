@@ -6,8 +6,9 @@ const KeyCookies = "setCookiesTokenChatApp"
 const atob = require('atob')
 
 module.exports.verify = (req,res) => {
-  const {headers} = req;
+  const {headers,rawHeaders} = req;
   const {cookie} = headers
+
   if(!cookie){
     return res.send({
       success:false
@@ -18,11 +19,21 @@ module.exports.verify = (req,res) => {
   let getToken = []
   for(var i=0;i<getcookie.length;i++){
     getToken = getcookie[i].split("=")
-    if(getToken[0] == "Token" || getToken[0] == " Token"){
-      break;
+    if(rawHeaders[1] == 'localhost:3001'){
+      if(getToken[0] == "TokenAdmin" || getToken[0] == " TokenAdmin"){
+        break;
+      }
+      else {
+        getToken = []
+      }
     }
     else{
-      getToken =[]
+      if(getToken[0] == "TokenUser" || getToken[0] == " TokenUser"){
+        break;
+      }
+      else {
+        getToken = []
+      }
     }
   }
   if(getToken[0]){

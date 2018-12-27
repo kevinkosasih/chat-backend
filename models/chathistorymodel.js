@@ -18,6 +18,7 @@ const ChatHistory  = mongoose.Schema({
   },
   reciever:[{
     username:{type:String, require:true, default:''},
+    name:{type:String, require:true, default:''},
     read:{type:Boolean , require:true, default:false}
   }]
 })

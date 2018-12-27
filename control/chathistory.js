@@ -20,7 +20,7 @@ const storageAttachment = multer.diskStorage({
 
 const attachPhoto = multer({
   storage : storageAttachment,
-  limits: {fileSize: 1000000, files:1},
+  limits: {files:1},
   fileFilter : function(req,file,cb){
     checkFileType(file,cb);
   }
@@ -30,7 +30,6 @@ const attachPhoto = multer({
 function checkFileType(file,cb){
   //allowed file
   const fileTypes = /jpeg|jpg|png|gif/;
-  console.log("ini file: ",file);
   //check ext
   const extname = fileTypes.test(path.extname(new Date().toISOString().replace(/:/g,'-') + '-' + file.originalname).toLowerCase());
   //check mime
@@ -40,14 +39,15 @@ function checkFileType(file,cb){
   }
   else if (file.mimetype == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"){
     return cb(null,true);
-  } else {
-    cb("ERROR");
+  }
+  else {
+    return cb("You can only upload .png/.jpeg/.jpg/.gif/.docx file");
   }
 }
 
 module.exports.savechat = (req,res) =>{
   attachPhoto(req,res,(err) =>{
-    const {body,headers,file} = req;
+    const {body,headers,file,rawHeaders} = req;
     const {
       chatId,
       message,
@@ -55,14 +55,15 @@ module.exports.savechat = (req,res) =>{
       sender,
       timeStamp,
       date,
-      recieve
+      receiveUsername,
+      receiveName
     }=body
     const {cookie} = headers;
 
     if(err){
       return res.send({
         success : false,
-        message : "You can only upload .png/.jpeg/.jpg/.gif/.docx file"
+        message : err
       })
     }
     if(!cookie){
@@ -76,11 +77,21 @@ module.exports.savechat = (req,res) =>{
     let getToken = []
     for(var i=0;i<getcookie.length;i++){
       getToken = getcookie[i].split("=")
-      if(getToken[0] == "Token" || getToken[0] == " Token"){
-        break;
+      if(rawHeaders[1] == 'localhost:3001'){
+        if(getToken[0] == "TokenAdmin" || getToken[0] == " TokenAdmin"){
+          break;
+        }
+        else {
+          getToken = []
+        }
       }
-      else{
-        getToken =[]
+      else {
+        if(getToken[0] == "TokenUser" || getToken[0] == " TokenUser"){
+          break;
+        }
+        else {
+          getToken = []
+        }
       }
     }
     if(getToken[0]){
@@ -107,7 +118,13 @@ module.exports.savechat = (req,res) =>{
 
         const newChatHistory = new ChatHistory();
         if(file){
-          const {filename,mimetype} = file;
+          const {filename,mimetype,size} = file;
+          if(size > 5000000){
+            return res.send({
+              success : false,
+              message : "You can only upload 5 MB File"
+            })
+          }
           newChatHistory.chatId = chatId;
           newChatHistory.message = newChatHistory.encrypt(message,"asd");
           newChatHistory.sender.username = senderUsername;
@@ -116,7 +133,7 @@ module.exports.savechat = (req,res) =>{
           newChatHistory.date = date;
           newChatHistory.attachment.name = filename;
           newChatHistory.attachment.type = mimetype;
-          newChatHistory.reciever = [{username : recieve}];
+          newChatHistory.reciever = [{username : receiveUsername, name : receiveName}];
           newChatHistory.save((err) =>{
             if(err){
               return res.send({
@@ -144,7 +161,7 @@ module.exports.savechat = (req,res) =>{
           newChatHistory.sender.name = sender;
           newChatHistory.timeStamp = timeStamp;
           newChatHistory.date = date;
-          newChatHistory.reciever = [{username : recieve}];
+          newChatHistory.reciever = [{username : receiveUsername ,name : receiveName}];
           newChatHistory.save((err) =>{
             if(err){
               return res.send({
